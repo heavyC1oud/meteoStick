@@ -21,7 +21,10 @@ int main(void)
 {
 	initLED();
 
-	while(1) {
+	uint8_t data = 0;
 
+	while(1) {
+		showNumber(data++);
+		delayMs(1000);
 	}
 }
