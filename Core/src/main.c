@@ -4,12 +4,62 @@
 #include "interrupt.h"
 #include "delay.h"
 #include "led.h"
+#include "tsc.h"
+#include "i2c.h"
+#include "bme280.h"
 #include "main.h"
+
 
 /*********************************************************************/
 
+/*************************	VARIABLE	******************************/
+struct bme280_dev sensor;
+struct bme280_data sensorData;
+
 
 /*************************	FUNCTION	******************************/
+
+/**********************************************************************
+*	function name	:	initBME280
+*	Description		:	BME280 initialization
+*	Arguments		:	none
+*	Return value	:	API success code
+**********************************************************************/
+int initBME280(void)
+{
+	delayMs(100);
+
+	uint8_t measureSet = 0;
+	int8_t rslt = BME280_OK;
+
+	sensor.dev_id = (BME280_I2C_ADDR_PRIM << 1);
+	sensor.intf = BME280_I2C_INTF;
+	sensor.read = I2CRead;
+	sensor.write = I2CWrite;
+	sensor.delay_ms = delayMs;
+
+	rslt = bme280_init(&sensor);
+
+	//	set the temperature, pressure and humidity settings
+	sensor.settings.osr_h = BME280_OVERSAMPLING_1X;
+	sensor.settings.osr_p = BME280_OVERSAMPLING_16X;
+	sensor.settings.osr_t = BME280_OVERSAMPLING_2X;
+	sensor.settings.filter = BME280_FILTER_COEFF_16;
+	sensor.settings.standby_time = BME280_STANDBY_TIME_125_MS;
+
+	// set the required sensor settings needed
+	measureSet = BME280_OSR_PRESS_SEL | BME280_OSR_TEMP_SEL | BME280_OSR_HUM_SEL | BME280_FILTER_SEL;
+
+	//	set the desired sensor configuration
+	rslt = bme280_set_sensor_settings(measureSet, &sensor);
+
+	//	set sensor mode
+	bme280_set_sensor_mode(BME280_NORMAL_MODE, &sensor);
+
+	return rslt;
+}
+/*********************************************************************/
+
 
 /**********************************************************************
 *	function name	:	main
@@ -19,12 +69,55 @@
 **********************************************************************/
 int main(void)
 {
-	initLED();
 
-	uint8_t data = 0;
+	initLED();
+	initTSC();
+	initI2C();
+	initBME280();
+	initIT();
 
 	while(1) {
-		showNumber(data++);
-		delayMs(1000);
+		if(touchAlert == TSC_CHANNEL_DETECT) {
+			bme280_get_sensor_data(BME280_ALL, &sensorData, &sensor);
+
+			switchInfoLed(LED_TEMP, LED_ON);
+			switchInfoLed(LED_HUM, LED_OFF);
+			switchInfoLed(LED_BAR, LED_OFF);
+			showNumber((uint32_t)sensorData.temperature);
+
+			delayMs(2000);
+
+			switchInfoLed(LED_TEMP, LED_OFF);
+			switchInfoLed(LED_HUM, LED_ON);
+			switchInfoLed(LED_BAR, LED_OFF);
+			showNumber((uint32_t)sensorData.humidity);
+
+			delayMs(2000);
+
+			switchInfoLed(LED_TEMP, LED_OFF);
+			switchInfoLed(LED_HUM, LED_OFF);
+			switchInfoLed(LED_BAR, LED_ON);
+
+
+			double fPressure = 0;
+			fPressure = sensorData.pressure;
+			fPressure /= 133.322;
+			fPressure =(uint32_t)fPressure % 700;
+			showNumber((uint32_t)fPressure);
+
+			delayMs(2000);
+
+			switchInfoLed(LED_TEMP, LED_OFF);
+			switchInfoLed(LED_HUM, LED_OFF);
+			switchInfoLed(LED_BAR, LED_OFF);
+			turnOffDisp();
+		}
+		else {
+			switchInfoLed(LED_TEMP, LED_OFF);
+			switchInfoLed(LED_HUM, LED_OFF);
+			switchInfoLed(LED_BAR, LED_OFF);
+		}
+
+		delayMs(10);
 	}
 }

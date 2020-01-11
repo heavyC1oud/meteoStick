@@ -9,6 +9,21 @@
 /*************************	FUNCTION	******************************/
 
 /**********************************************************************
+* Function name : initIT
+* Description   : interrupt initialization
+* Arguments     : none
+* Return Value  : none
+**********************************************************************/
+void initIT(void)
+{
+	//	Touch sensing interrupt
+	NVIC_EnableIRQ(TSC_IRQn);
+	NVIC_SetPriority(TSC_IRQn, 11);
+}
+/*********************************************************************/
+
+
+/**********************************************************************
 * Function name : SysTick_Handler
 * Description   : SysTick interrupt handle
 * Arguments     : none
