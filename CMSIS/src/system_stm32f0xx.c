@@ -178,7 +178,7 @@ void SystemInit(void)
 		SystemCoreClockUpdate();
 
 		//	set systick timer to 1 ms delay
-		SysTick_Config(SystemCoreClock / 1000);
+//		SysTick_Config(SystemCoreClock / 1000);
 }
 
 /**

@@ -38,7 +38,7 @@ int initBME280(void)
 	sensor.intf = BME280_I2C_INTF;
 	sensor.read = I2CRead;
 	sensor.write = I2CWrite;
-	sensor.delay_ms = delayMs;
+	sensor.delay_ms = vTaskDelay;
 
 	rslt = bme280_init(&sensor);
 
@@ -71,14 +71,20 @@ int initBME280(void)
 **********************************************************************/
 int main(void)
 {
-
 	initLED();
+//	initI2C();
+//	initBME280();
 	initTSC();
-	initI2C();
-	initBME280();
 	initIT();
 
-	xTaskCreate(taskLED, "LED", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+	while(1) {
+		switchInfoLed(LED_TEMP, LED_ON);
+		vTaskDelay(500);
+		switchInfoLed(LED_TEMP, LED_OFF);
+		vTaskDelay(500);
+	}
+
+	xTaskCreate(taskLED, "LED", 128, NULL, 1, NULL);
 
 	vTaskStartScheduler();
 
