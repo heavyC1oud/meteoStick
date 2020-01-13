@@ -29,8 +29,8 @@ void initIT(void)
 * Arguments     : none
 * Return Value  : none
 **********************************************************************/
-void SysTick_Handler(void)
-{
-	delayTimerValue--;
-}
+//void SysTick_Handler(void)
+//{
+//	delayTimerValue--;
+//}
 /*********************************************************************/

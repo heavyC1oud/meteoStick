@@ -7,8 +7,12 @@
 #include "tsc.h"
 #include "i2c.h"
 #include "bme280.h"
+#include "FreeRTOS.h"
+#include "task.h"
 #include "main.h"
 
+
+void taskLED(void *pvParameters);
 
 /*********************************************************************/
 
@@ -27,8 +31,6 @@ struct bme280_data sensorData;
 **********************************************************************/
 int initBME280(void)
 {
-	delayMs(100);
-
 	uint8_t measureSet = 0;
 	int8_t rslt = BME280_OK;
 
@@ -76,6 +78,12 @@ int main(void)
 	initBME280();
 	initIT();
 
+	xTaskCreate(taskLED, "LED", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+
+	vTaskStartScheduler();
+
+
+
 	while(1) {
 		if(touchAlert == TSC_CHANNEL_DETECT) {
 			bme280_get_sensor_data(BME280_ALL, &sensorData, &sensor);
@@ -119,5 +127,54 @@ int main(void)
 		}
 
 		delayMs(10);
+	}
+}
+
+//*********************************************************************
+void taskLED(void *pvParameters)
+{
+	while(1) {
+		if(touchAlert == TSC_CHANNEL_DETECT) {
+			bme280_get_sensor_data(BME280_ALL, &sensorData, &sensor);
+
+			switchInfoLed(LED_TEMP, LED_ON);
+			switchInfoLed(LED_HUM, LED_OFF);
+			switchInfoLed(LED_BAR, LED_OFF);
+			showNumber((uint32_t)sensorData.temperature);
+
+			vTaskDelay(2000);
+
+			switchInfoLed(LED_TEMP, LED_OFF);
+			switchInfoLed(LED_HUM, LED_ON);
+			switchInfoLed(LED_BAR, LED_OFF);
+			showNumber((uint32_t)sensorData.humidity);
+
+			vTaskDelay(2000);
+
+			switchInfoLed(LED_TEMP, LED_OFF);
+			switchInfoLed(LED_HUM, LED_OFF);
+			switchInfoLed(LED_BAR, LED_ON);
+
+
+			double fPressure = 0;
+			fPressure = sensorData.pressure;
+			fPressure /= 133.322;
+			fPressure =(uint32_t)fPressure % 700;
+			showNumber((uint32_t)fPressure);
+
+			vTaskDelay(2000);
+
+			switchInfoLed(LED_TEMP, LED_OFF);
+			switchInfoLed(LED_HUM, LED_OFF);
+			switchInfoLed(LED_BAR, LED_OFF);
+			turnOffDisp();
+		}
+		else {
+			switchInfoLed(LED_TEMP, LED_OFF);
+			switchInfoLed(LED_HUM, LED_OFF);
+			switchInfoLed(LED_BAR, LED_OFF);
+		}
+
+		vTaskDelay(10);
 	}
 }
