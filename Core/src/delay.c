@@ -123,5 +123,8 @@ void delayMs(uint32_t delay)
 void TIM7_IRQHandler(void)
 {
 	delayTimerValue--;
+
+	//	clear interrupt flag
+	TIM7->SR &= ~TIM_SR_UIF;
 }
 /*********************************************************************/

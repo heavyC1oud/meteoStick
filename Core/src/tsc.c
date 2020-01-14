@@ -3,7 +3,7 @@
 #include "tsc.h"
 
 /*************************	VARIABLE	******************************/
-volatile TSC_CHANNEL_Typedef touchAlert = TSC_CHANNEL_EMPTY;
+volatile TSC_CHANNEL_Typedef touchKey = TSC_CHANNEL_EMPTY;
 
 static uint32_t channelBase = 0;
 
@@ -169,10 +169,10 @@ static void calibratingTSC(void)
 void TSC_IRQHandler(void)
 {
 	if(TSC->IOGXCR[4] < (channelBase - TSC_DETECT_EDGE)) {
-		touchAlert = TSC_CHANNEL_DETECT;
+		touchKey = TSC_CHANNEL_DETECT;
 	}
 	else {
-		touchAlert = TSC_CHANNEL_EMPTY;
+		touchKey = TSC_CHANNEL_EMPTY;
 	}
 
 	//	Clear interrupt flag

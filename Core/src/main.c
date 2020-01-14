@@ -12,12 +12,16 @@
 
 
 void taskLED(void *pvParameters);
+void taskGetMeas(void *pvParameters);
+void taskTouchHandler(void *pvParameters);
+void taskRTOS(void *pvParameters);
 
 /*********************************************************************/
 
 /*************************	VARIABLE	******************************/
-struct bme280_dev sensor;
-struct bme280_data sensorData;
+struct bme280_dev sensor = {0};
+struct bme280_data sensorData = {0};
+TOUCH_STATE_typedef tKeyState = {0};
 
 
 /*************************	FUNCTION	******************************/
@@ -76,70 +80,92 @@ int main(void)
 	initBME280();
 	initTSC();
 
-	while(1) {
-		switchInfoLed(LED_TEMP, LED_ON);
-		vTaskDelay(500);
-		switchInfoLed(LED_TEMP, LED_OFF);
-		vTaskDelay(500);
-	}
+	xTaskCreate(taskGetMeas, "GET MEAS", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+	xTaskCreate(taskTouchHandler, "TOUCH HANDLER", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+	xTaskCreate(taskRTOS, "TASK RTOS", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
 
-	xTaskCreate(taskLED, "LED", 128, NULL, 1, NULL);
+
+//	xTaskCreate(taskLED, "LED", 128, NULL, 1, NULL);
 
 	vTaskStartScheduler();
 
+	while(1);
+
+}
 
 
+void taskGetMeas(void *pvParameters)
+{
 	while(1) {
-		if(touchAlert == TSC_CHANNEL_DETECT) {
-			bme280_get_sensor_data(BME280_ALL, &sensorData, &sensor);
-
-			switchInfoLed(LED_TEMP, LED_ON);
-			switchInfoLed(LED_HUM, LED_OFF);
-			switchInfoLed(LED_BAR, LED_OFF);
-			showNumber((uint32_t)sensorData.temperature);
-
-			delayMs(2000);
-
-			switchInfoLed(LED_TEMP, LED_OFF);
-			switchInfoLed(LED_HUM, LED_ON);
-			switchInfoLed(LED_BAR, LED_OFF);
-			showNumber((uint32_t)sensorData.humidity);
-
-			delayMs(2000);
-
-			switchInfoLed(LED_TEMP, LED_OFF);
-			switchInfoLed(LED_HUM, LED_OFF);
-			switchInfoLed(LED_BAR, LED_ON);
-
-
-			double fPressure = 0;
-			fPressure = sensorData.pressure;
-			fPressure /= 133.322;
-			fPressure =(uint32_t)fPressure % 700;
-			showNumber((uint32_t)fPressure);
-
-			delayMs(2000);
-
-			switchInfoLed(LED_TEMP, LED_OFF);
-			switchInfoLed(LED_HUM, LED_OFF);
-			switchInfoLed(LED_BAR, LED_OFF);
-			turnOffDisp();
-		}
-		else {
-			switchInfoLed(LED_TEMP, LED_OFF);
-			switchInfoLed(LED_HUM, LED_OFF);
-			switchInfoLed(LED_BAR, LED_OFF);
-		}
-
-		delayMs(10);
+		bme280_get_sensor_data(BME280_ALL, &sensorData, &sensor);
+		vTaskDelay(SENSOR_POLL_FR);
 	}
 }
+
+void taskTouchHandler(void *pvParameters)
+{
+	tKeyState.curState = TSC_CHANNEL_EMPTY;
+	tKeyState.prevState = TSC_CHANNEL_EMPTY;
+	tKeyState.shortTouch = RESET;
+	tKeyState.longTouch = RESET;
+	tKeyState.longTouchTimer = 0;
+
+	while(1) {
+		tKeyState.curState = touchKey;
+
+		if((tKeyState.curState == TSC_CHANNEL_DETECT) && (tKeyState.prevState == TSC_CHANNEL_EMPTY)) {
+			tKeyState.longTouchTimer++;
+		}
+		else if((tKeyState.curState == TSC_CHANNEL_EMPTY) && (tKeyState.prevState == TSC_CHANNEL_DETECT)) {
+			if(tKeyState.longTouchTimer <= LONG_TOUCH_MAX_TIMER) {
+				tKeyState.shortTouch = SET;
+			}
+
+			tKeyState.longTouchTimer = 0;
+		}
+		else if((tKeyState.curState == TSC_CHANNEL_DETECT) && (tKeyState.prevState == TSC_CHANNEL_DETECT)) {
+			tKeyState.longTouchTimer++;
+
+			if(tKeyState.longTouchTimer > LONG_TOUCH_MAX_TIMER) {
+				tKeyState.longTouch = SET;
+			}
+		}
+
+		tKeyState.prevState = tKeyState.curState;
+
+		vTaskDelay(TOUCH_POLL_FR);
+	}
+}
+
+void taskRTOS(void *pvParameters)
+{
+	while(1) {
+		if(tKeyState.longTouch == SET) {
+			switchInfoLed(LED_BAR, LED_ON);
+			vTaskDelay(1000);
+
+			switchInfoLed(LED_BAR, LED_OFF);
+			tKeyState.longTouch = RESET;
+		}
+
+		if(tKeyState.shortTouch == SET) {
+			switchInfoLed(LED_TEMP, LED_ON);
+			vTaskDelay(10);
+
+			switchInfoLed(LED_TEMP, LED_OFF);
+			tKeyState.shortTouch = RESET;
+		}
+
+		taskYIELD();
+	}
+}
+
 
 //*********************************************************************
 void taskLED(void *pvParameters)
 {
 	while(1) {
-		if(touchAlert == TSC_CHANNEL_DETECT) {
+		if(touchKey == TSC_CHANNEL_DETECT) {
 			bme280_get_sensor_data(BME280_ALL, &sensorData, &sensor);
 
 			switchInfoLed(LED_TEMP, LED_ON);
@@ -147,14 +173,14 @@ void taskLED(void *pvParameters)
 			switchInfoLed(LED_BAR, LED_OFF);
 			showNumber((uint32_t)sensorData.temperature);
 
-			vTaskDelay(2000);
+			vTaskDelay(500);
 
 			switchInfoLed(LED_TEMP, LED_OFF);
 			switchInfoLed(LED_HUM, LED_ON);
 			switchInfoLed(LED_BAR, LED_OFF);
 			showNumber((uint32_t)sensorData.humidity);
 
-			vTaskDelay(2000);
+			vTaskDelay(500);
 
 			switchInfoLed(LED_TEMP, LED_OFF);
 			switchInfoLed(LED_HUM, LED_OFF);
@@ -167,7 +193,7 @@ void taskLED(void *pvParameters)
 			fPressure =(uint32_t)fPressure % 700;
 			showNumber((uint32_t)fPressure);
 
-			vTaskDelay(2000);
+			vTaskDelay(500);
 
 			switchInfoLed(LED_TEMP, LED_OFF);
 			switchInfoLed(LED_HUM, LED_OFF);
