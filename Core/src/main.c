@@ -1,7 +1,6 @@
 
 #include <stddef.h>
 #include "stm32f0xx.h"
-#include "interrupt.h"
 #include "delay.h"
 #include "led.h"
 #include "tsc.h"
@@ -38,7 +37,7 @@ int initBME280(void)
 	sensor.intf = BME280_I2C_INTF;
 	sensor.read = I2CRead;
 	sensor.write = I2CWrite;
-	sensor.delay_ms = vTaskDelay;
+	sensor.delay_ms = delayMs;
 
 	rslt = bme280_init(&sensor);
 
@@ -72,10 +71,10 @@ int initBME280(void)
 int main(void)
 {
 	initLED();
-//	initI2C();
-//	initBME280();
+	initDelayTimer();
+	initI2C();
+	initBME280();
 	initTSC();
-	initIT();
 
 	while(1) {
 		switchInfoLed(LED_TEMP, LED_ON);

@@ -123,6 +123,10 @@ void initTSC(void)
 	//	Enable interrupt
 	TSC->IER |= TSC_IER_EOAIE | TSC_IER_MCEIE;
 
+	//	NVIC touch sensing interrupt set
+	NVIC_EnableIRQ(TSC_IRQn);
+	NVIC_SetPriority(TSC_IRQn, 11);
+
 	//	Start acquisition
 	TSC->CR |= TSC_CR_START;
 }
