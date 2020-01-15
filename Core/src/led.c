@@ -1,10 +1,11 @@
 
 #include <stm32f072xb.h>
-#include <led.h>
+#include "pwm.h"
+#include "led.h"
 
 /*************************	FUNCTIONS PROTOTYPE	******************************/
-static void turnOffOneDigit(void);
-static void turnOffTenDigit(void);
+static void resetDispOne(void);
+static void resetDispTen(void);
 
 /*************************	FUNCTION	******************************/
 
@@ -64,67 +65,427 @@ void initLED(void)
 					  GPIO_PUPDR_PUPDR11 | GPIO_PUPDR_PUPDR12 | GPIO_PUPDR_PUPDR13 | GPIO_PUPDR_PUPDR14 |
 					  GPIO_PUPDR_PUPDR15);
 
-	//	BRRx = 1 - reset bit
-	//	GPIOA
-	GPIOA->BRR = GPIO_BRR_BR_0 | GPIO_BRR_BR_1 | GPIO_BRR_BR_2 | GPIO_BRR_BR_3 |
-				 GPIO_BRR_BR_4 | GPIO_BRR_BR_5 | GPIO_BRR_BR_6 | GPIO_BRR_BR_7;
-
-	//	GPIOB
-	GPIOB->BRR = GPIO_BRR_BR_0 | GPIO_BRR_BR_1 | GPIO_BRR_BR_2 | GPIO_BRR_BR_10 |
-				 GPIO_BRR_BR_11 | GPIO_BRR_BR_12 | GPIO_BRR_BR_13 | GPIO_BRR_BR_14 |
-				 GPIO_BRR_BR_15;
+	resetDisp();
 }
 /*********************************************************************/
 
 /**********************************************************************
-*	function name	:	turnOffOneDigit
-*	Description		:	turn off first digit on LED display
+*	function name	:	resetDispOne
+*	Description		:	turn off first digit on LED display (one)
 *	Arguments		:	none
 *	Return value	:	none
 **********************************************************************/
-static void turnOffOneDigit(void)
+static void resetDispOne(void)
 {
-	GPIOA->BSRR = GPIO_BSRR_BR_0 | GPIO_BSRR_BR_1 | GPIO_BSRR_BR_2;
-	GPIOB->BSRR = GPIO_BSRR_BR_2 | GPIO_BSRR_BR_10 | GPIO_BSRR_BR_11 | GPIO_BSRR_BR_12;
+	RESET_DIG_ONE_A;
+	RESET_DIG_ONE_B;
+	RESET_DIG_ONE_C;
+	RESET_DIG_ONE_D;
+	RESET_DIG_ONE_E;
+	RESET_DIG_ONE_F;
+	RESET_DIG_ONE_G;
 }
 /*********************************************************************/
 
 
 /**********************************************************************
-*	function name	:	turnOffTenDigit
-*	Description		:	turn off second digit on LED display
+*	function name	:	resetDispTen
+*	Description		:	turn off second digit on LED display (ten)
 *	Arguments		:	none
 *	Return value	:	none
 **********************************************************************/
-static void turnOffTenDigit(void)
+static void resetDispTen(void)
 {
-	GPIOA->BSRR = GPIO_BSRR_BR_3 | GPIO_BSRR_BR_4 | GPIO_BSRR_BR_5 | GPIO_BSRR_BR_6 | GPIO_BSRR_BR_7;
-	GPIOB->BSRR = GPIO_BSRR_BR_0 | GPIO_BSRR_BR_1;
+	RESET_DIG_TEN_A;
+	RESET_DIG_TEN_B;
+	RESET_DIG_TEN_C;
+	RESET_DIG_TEN_D;
+	RESET_DIG_TEN_E;
+	RESET_DIG_TEN_F;
+	RESET_DIG_TEN_G;
 }
 /*********************************************************************/
 
 
 /**********************************************************************
-*	function name	:	turnOffDisp
-*	Description		:	turn off whole LED display
+*	function name	:	resetDisp
+*	Description		:	turn off LED display
 *	Arguments		:	none
 *	Return value	:	none
 **********************************************************************/
-void turnOffDisp(void)
+void resetDisp(void)
 {
-	turnOffTenDigit();
-	turnOffOneDigit();
+	resetDispTen();
+	resetDispOne();
 }
 /*********************************************************************/
 
 
 /**********************************************************************
-*	function name	:	showNumber
-*	Description		:	set number from 0 to 99 on LED display
+*	function name	:	setZero
+*	Description		:	set zero digit
+*	Arguments		:	rank - one/ten display character
+*	Return value	:	none
+**********************************************************************/
+void setZero(DISP_RANK_typedef rank)
+{
+	switch(rank) {
+	case DISP_RANK_ONE:
+		resetDispOne();
+
+		SET_DIG_ONE_A;
+		SET_DIG_ONE_B;
+		SET_DIG_ONE_C;
+		SET_DIG_ONE_D;
+		SET_DIG_ONE_E;
+		SET_DIG_ONE_F;
+
+		break;
+	case DISP_RANK_TEN:
+		resetDispTen();
+
+		SET_DIG_TEN_A;
+		SET_DIG_TEN_B;
+		SET_DIG_TEN_C;
+		SET_DIG_TEN_D;
+		SET_DIG_TEN_E;
+		SET_DIG_TEN_F;
+
+		break;
+	default:
+		break;
+	}
+}
+/*********************************************************************/
+
+
+/**********************************************************************
+*	function name	:	setOne
+*	Description		:	set one digit
+*	Arguments		:	rank - one/ten display character
+*	Return value	:	none
+**********************************************************************/
+void setOne(DISP_RANK_typedef rank)
+{
+	switch(rank) {
+	case DISP_RANK_ONE:
+		resetDispOne();
+
+		SET_DIG_ONE_B;
+		SET_DIG_ONE_C;
+
+		break;
+	case DISP_RANK_TEN:
+		resetDispTen();
+
+		SET_DIG_TEN_B;
+		SET_DIG_TEN_C;
+
+		break;
+	default:
+		break;
+	}
+}
+/*********************************************************************/
+
+
+/**********************************************************************
+*	function name	:	setTwo
+*	Description		:	set two digit
+*	Arguments		:	rank - one/ten display character
+*	Return value	:	none
+**********************************************************************/
+void setTwo(DISP_RANK_typedef rank)
+{
+	switch(rank) {
+	case DISP_RANK_ONE:
+		resetDispOne();
+
+		SET_DIG_ONE_A;
+		SET_DIG_ONE_B;
+		SET_DIG_ONE_D;
+		SET_DIG_ONE_E;
+		SET_DIG_ONE_G;
+
+		break;
+	case DISP_RANK_TEN:
+		resetDispTen();
+
+		SET_DIG_TEN_A;
+		SET_DIG_TEN_B;
+		SET_DIG_TEN_D;
+		SET_DIG_TEN_E;
+		SET_DIG_TEN_G;
+
+		break;
+	default:
+		break;
+	}
+}
+/*********************************************************************/
+
+
+/**********************************************************************
+*	function name	:	setThree
+*	Description		:	set three digit
+*	Arguments		:	rank - one/ten display character
+*	Return value	:	none
+**********************************************************************/
+void setThree(DISP_RANK_typedef rank)
+{
+	switch(rank) {
+	case DISP_RANK_ONE:
+		resetDispOne();
+
+		SET_DIG_ONE_A;
+		SET_DIG_ONE_B;
+		SET_DIG_ONE_C;
+		SET_DIG_ONE_D;
+		SET_DIG_ONE_G;
+
+		break;
+	case DISP_RANK_TEN:
+		resetDispTen();
+
+		SET_DIG_TEN_A;
+		SET_DIG_TEN_B;
+		SET_DIG_TEN_C;
+		SET_DIG_TEN_D;
+		SET_DIG_TEN_G;
+
+		break;
+	default:
+		break;
+	}
+}
+/*********************************************************************/
+
+
+/**********************************************************************
+*	function name	:	setFour
+*	Description		:	set four digit
+*	Arguments		:	rank - one/ten display character
+*	Return value	:	none
+**********************************************************************/
+void setFour(DISP_RANK_typedef rank)
+{
+	switch(rank) {
+	case DISP_RANK_ONE:
+		resetDispOne();
+
+		SET_DIG_ONE_B;
+		SET_DIG_ONE_C;
+		SET_DIG_ONE_F;
+		SET_DIG_ONE_G;
+
+		break;
+	case DISP_RANK_TEN:
+		resetDispTen();
+
+		SET_DIG_TEN_B;
+		SET_DIG_TEN_C;
+		SET_DIG_TEN_F;
+		SET_DIG_TEN_G;
+
+		break;
+	default:
+		break;
+	}
+}
+/*********************************************************************/
+
+
+/**********************************************************************
+*	function name	:	setFive
+*	Description		:	set five digit
+*	Arguments		:	rank - one/ten display character
+*	Return value	:	none
+**********************************************************************/
+void setFive(DISP_RANK_typedef rank)
+{
+	switch(rank) {
+	case DISP_RANK_ONE:
+		resetDispOne();
+
+		SET_DIG_ONE_A;
+		SET_DIG_ONE_C;
+		SET_DIG_ONE_D;
+		SET_DIG_ONE_F;
+		SET_DIG_ONE_G;
+
+		break;
+	case DISP_RANK_TEN:
+		resetDispTen();
+
+		SET_DIG_TEN_A;
+		SET_DIG_TEN_C;
+		SET_DIG_TEN_D;
+		SET_DIG_TEN_F;
+		SET_DIG_TEN_G;
+
+		break;
+	default:
+		break;
+	}
+}
+/*********************************************************************/
+
+
+/**********************************************************************
+*	function name	:	setSix
+*	Description		:	set six digit
+*	Arguments		:	rank - one/ten display character
+*	Return value	:	none
+**********************************************************************/
+void setSix(DISP_RANK_typedef rank)
+{
+	switch(rank) {
+	case DISP_RANK_ONE:
+		resetDispOne();
+
+		SET_DIG_ONE_A;
+		SET_DIG_ONE_C;
+		SET_DIG_ONE_D;
+		SET_DIG_ONE_E;
+		SET_DIG_ONE_F;
+		SET_DIG_ONE_G;
+
+		break;
+	case DISP_RANK_TEN:
+		resetDispTen();
+
+		SET_DIG_TEN_A;
+		SET_DIG_TEN_C;
+		SET_DIG_TEN_D;
+		SET_DIG_TEN_E;
+		SET_DIG_TEN_F;
+		SET_DIG_TEN_G;
+
+		break;
+	default:
+		break;
+	}
+}
+/*********************************************************************/
+
+
+/**********************************************************************
+*	function name	:	setSeven
+*	Description		:	set seven digit
+*	Arguments		:	rank - one/ten display character
+*	Return value	:	none
+**********************************************************************/
+void setSeven(DISP_RANK_typedef rank)
+{
+	switch(rank) {
+	case DISP_RANK_ONE:
+		resetDispOne();
+
+		SET_DIG_ONE_A;
+		SET_DIG_ONE_B;
+		SET_DIG_ONE_C;
+
+		break;
+	case DISP_RANK_TEN:
+		resetDispTen();
+
+		SET_DIG_TEN_A;
+		SET_DIG_TEN_B;
+		SET_DIG_TEN_C;
+
+		break;
+	default:
+		break;
+	}
+}
+/*********************************************************************/
+
+
+/**********************************************************************
+*	function name	:	setEight
+*	Description		:	set eight digit
+*	Arguments		:	rank - one/ten display character
+*	Return value	:	none
+**********************************************************************/
+void setEight(DISP_RANK_typedef rank)
+{
+	switch(rank) {
+	case DISP_RANK_ONE:
+		resetDispOne();
+
+		SET_DIG_ONE_A;
+		SET_DIG_ONE_B;
+		SET_DIG_ONE_C;
+		SET_DIG_ONE_D;
+		SET_DIG_ONE_E;
+		SET_DIG_ONE_F;
+		SET_DIG_ONE_G;
+
+		break;
+	case DISP_RANK_TEN:
+		resetDispTen();
+
+		SET_DIG_TEN_A;
+		SET_DIG_TEN_B;
+		SET_DIG_TEN_C;
+		SET_DIG_TEN_D;
+		SET_DIG_TEN_E;
+		SET_DIG_TEN_F;
+		SET_DIG_TEN_G;
+
+		break;
+	default:
+		break;
+	}
+}
+/*********************************************************************/
+
+
+/**********************************************************************
+*	function name	:	setNine
+*	Description		:	set nine digit
+*	Arguments		:	rank - one/ten display character
+*	Return value	:	none
+**********************************************************************/
+void setNine(DISP_RANK_typedef rank)
+{
+	switch(rank) {
+	case DISP_RANK_ONE:
+		resetDispOne();
+
+		SET_DIG_ONE_A;
+		SET_DIG_ONE_B;
+		SET_DIG_ONE_C;
+		SET_DIG_ONE_D;
+		SET_DIG_ONE_F;
+		SET_DIG_ONE_G;
+
+		break;
+	case DISP_RANK_TEN:
+		resetDispTen();
+
+		SET_DIG_TEN_A;
+		SET_DIG_TEN_B;
+		SET_DIG_TEN_C;
+		SET_DIG_TEN_D;
+		SET_DIG_TEN_F;
+		SET_DIG_TEN_G;
+
+		break;
+	default:
+		break;
+	}
+}
+/*********************************************************************/
+
+
+/**********************************************************************
+*	function name	:	setDispNum
+*	Description		:	set number on LED display
 *	Arguments		:	num - number to display
 *	Return value	:	none
 **********************************************************************/
-void showNumber(uint8_t num)
+void setDispNum(uint8_t num)
 {
 	//	only two digits can be displayed
 	if(num > 99) {
@@ -132,94 +493,74 @@ void showNumber(uint8_t num)
 	}
 
 	//	show digits on display
-	//	show ten digit sector
-	turnOffTenDigit();
 
-	switch(num / 10) {
+	//	show one digit sector
+	switch(num % 10) {
 	case 0:
-		GPIOA->BSRR = GPIO_BSRR_BS_3 | GPIO_BSRR_BS_4 | GPIO_BSRR_BS_5 | GPIO_BSRR_BS_6 | GPIO_BSRR_BS_7;
-		GPIOB->BSRR = GPIO_BSRR_BS_1;
+		setZero(DISP_RANK_ONE);
 		break;
 	case 1:
-		GPIOA->BSRR = GPIO_BSRR_BS_5 | GPIO_BSRR_BS_6;
+		setOne(DISP_RANK_ONE);
 		break;
 	case 2:
-		GPIOA->BSRR = GPIO_BSRR_BS_3 | GPIO_BSRR_BS_4 | GPIO_BSRR_BS_6 | GPIO_BSRR_BS_7;
-		GPIOB->BSRR = GPIO_BSRR_BS_0;
+		setTwo(DISP_RANK_ONE);
 		break;
 	case 3:
-		GPIOA->BSRR = GPIO_BSRR_BS_3 | GPIO_BSRR_BS_5 | GPIO_BSRR_BS_6 | GPIO_BSRR_BS_7;
-		GPIOB->BSRR = GPIO_BSRR_BS_0;
+		setThree(DISP_RANK_ONE);
 		break;
 	case 4:
-		GPIOA->BSRR = GPIO_BSRR_BS_5 | GPIO_BSRR_BS_6;
-		GPIOB->BSRR = GPIO_BSRR_BS_0 | GPIO_BSRR_BS_1;
+		setFour(DISP_RANK_ONE);
 		break;
 	case 5:
-		GPIOA->BSRR = GPIO_BSRR_BS_3 | GPIO_BSRR_BS_5 | GPIO_BSRR_BS_7;
-		GPIOB->BSRR = GPIO_BSRR_BS_0 | GPIO_BSRR_BS_1;
+		setFive(DISP_RANK_ONE);
 		break;
 	case 6:
-		GPIOA->BSRR = GPIO_BSRR_BS_3 | GPIO_BSRR_BS_4 | GPIO_BSRR_BS_5 | GPIO_BSRR_BS_7;
-		GPIOB->BSRR = GPIO_BSRR_BS_0 | GPIO_BSRR_BS_1;
+		setSix(DISP_RANK_ONE);
 		break;
 	case 7:
-		GPIOA->BSRR = GPIO_BSRR_BS_5 | GPIO_BSRR_BS_6 | GPIO_BSRR_BS_7;
+		setSeven(DISP_RANK_ONE);
 		break;
 	case 8:
-		GPIOA->BSRR = GPIO_BSRR_BS_3 | GPIO_BSRR_BS_4 | GPIO_BSRR_BS_5 | GPIO_BSRR_BS_6 | GPIO_BSRR_BS_7;
-		GPIOB->BSRR = GPIO_BSRR_BS_0 | GPIO_BSRR_BS_1;
+		setEight(DISP_RANK_ONE);
 		break;
 	case 9:
-		GPIOA->BSRR = GPIO_BSRR_BS_3 | GPIO_BSRR_BS_5 | GPIO_BSRR_BS_6 | GPIO_BSRR_BS_7;
-		GPIOB->BSRR = GPIO_BSRR_BS_0 | GPIO_BSRR_BS_1;
+		setNine(DISP_RANK_ONE);
+		break;
 	default:
 		break;
 	}
 
-	//	show one digit sector
-	turnOffOneDigit();
-
+	//	show ten digit sector
 	switch(num % 10) {
 	case 0:
-		GPIOA->BSRR = GPIO_BSRR_BS_0 | GPIO_BSRR_BS_1 | GPIO_BSRR_BS_2;
-		GPIOB->BSRR = GPIO_BSRR_BS_10 | GPIO_BSRR_BS_11 | GPIO_BSRR_BS_12;
+		setZero(DISP_RANK_TEN);
 		break;
 	case 1:
-		GPIOA->BSRR = GPIO_BSRR_BS_0;
-		GPIOB->BSRR = GPIO_BSRR_BS_11;
+		setOne(DISP_RANK_TEN);
 		break;
 	case 2:
-		GPIOA->BSRR = GPIO_BSRR_BS_1 | GPIO_BSRR_BS_2;
-		GPIOB->BSRR = GPIO_BSRR_BS_2 | GPIO_BSRR_BS_11 | GPIO_BSRR_BS_12;
+		setTwo(DISP_RANK_TEN);
 		break;
 	case 3:
-		GPIOA->BSRR = GPIO_BSRR_BS_0 | GPIO_BSRR_BS_1;
-		GPIOB->BSRR = GPIO_BSRR_BS_2 | GPIO_BSRR_BS_11 | GPIO_BSRR_BS_12;
+		setThree(DISP_RANK_TEN);
 		break;
 	case 4:
-		GPIOA->BSRR = GPIO_BSRR_BS_0;
-		GPIOB->BSRR = GPIO_BSRR_BS_2 | GPIO_BSRR_BS_10 | GPIO_BSRR_BS_11;
+		setFour(DISP_RANK_TEN);
 		break;
 	case 5:
-		GPIOA->BSRR = GPIO_BSRR_BS_0 | GPIO_BSRR_BS_1;
-		GPIOB->BSRR = GPIO_BSRR_BS_2 | GPIO_BSRR_BS_10 | GPIO_BSRR_BS_12;
+		setFive(DISP_RANK_TEN);
 		break;
 	case 6:
-		GPIOA->BSRR = GPIO_BSRR_BS_0 | GPIO_BSRR_BS_1 | GPIO_BSRR_BS_2;
-		GPIOB->BSRR = GPIO_BSRR_BS_2 | GPIO_BSRR_BS_10 | GPIO_BSRR_BS_12;
+		setSix(DISP_RANK_TEN);
 		break;
 	case 7:
-		GPIOA->BSRR = GPIO_BSRR_BS_0;
-		GPIOB->BSRR = GPIO_BSRR_BS_11 | GPIO_BSRR_BS_12;
+		setSeven(DISP_RANK_TEN);
 		break;
 	case 8:
-		GPIOA->BSRR = GPIO_BSRR_BS_0 | GPIO_BSRR_BS_1 | GPIO_BSRR_BS_2;
-		GPIOB->BSRR = GPIO_BSRR_BS_2 | GPIO_BSRR_BS_10 | GPIO_BSRR_BS_11 | GPIO_BSRR_BS_12;
+		setEight(DISP_RANK_TEN);
 		break;
 	case 9:
-		GPIOA->BSRR = GPIO_BSRR_BS_0 | GPIO_BSRR_BS_1;
-		GPIOB->BSRR = GPIO_BSRR_BS_2 | GPIO_BSRR_BS_10 | GPIO_BSRR_BS_11 | GPIO_BSRR_BS_12;
+		setNine(DISP_RANK_TEN);
 		break;
 	default:
 		break;
@@ -229,26 +570,52 @@ void showNumber(uint8_t num)
 
 
 /**********************************************************************
-*	function name	:	switchInfoLed
+*	function name	:	setDispNumSmooth
+*	Description		:	smooth set number on LED display
+*	Arguments		:	num - number to display
+*	Return value	:	none
+**********************************************************************/
+void setDispNumSmooth(uint8_t num)
+{
+	startPWMTimer();
+
+	for(uint8_t i = 0; i < PWM_COUNT_MAX_VALUE; i++) {
+		if(i <= PWMCount) {
+			setDispNum(num);
+		}
+		else {
+			resetDisp();
+		}
+	}
+
+	setDispNum(num);
+
+	stopPWMTimer();
+}
+/*********************************************************************/
+
+
+/**********************************************************************
+*	function name	:	setLedInfo
 *	Description		:	turn on/off temperature/humidity/pressure LEDs
 *	Arguments		:	led - temperature/humidity/pressure LED
 *					:	act - on/off
 *	Return value	:	none
 **********************************************************************/
-void switchInfoLed(LED_INFO_typedef led, LED_ACT_typedef act)
+void setLedInfo(LED_INFO_typedef led, LED_ACT_typedef act)
 {
 	switch(led) {
 	case LED_TEMP:
-		if(act == LED_ON) GPIOB->BSRR = GPIO_BSRR_BS_14;
-		else if(act == LED_OFF) GPIOB->BSRR = GPIO_BSRR_BR_14;
+		if(act == LED_ON) SET_LED_TEMP;
+		else if(act == LED_OFF) RESET_LED_TEMP;
 		break;
 	case LED_HUM:
-		if(act == LED_ON) GPIOB->BSRR = GPIO_BSRR_BS_13;
-		else if(act == LED_OFF) GPIOB->BSRR = GPIO_BSRR_BR_13;
+		if(act == LED_ON) GPIOB->BSRR = SET_LED_HUM;
+		else if(act == LED_OFF) GPIOB->BSRR = RESET_LED_TEMP;
 		break;
 	case LED_BAR:
-		if(act == LED_ON) GPIOB->BSRR = GPIO_BSRR_BS_15;
-		else if(act == LED_OFF) GPIOB->BSRR = GPIO_BSRR_BR_15;
+		if(act == LED_ON) GPIOB->BSRR = SET_LED_BAR;
+		else if(act == LED_OFF) GPIOB->BSRR = RESET_LED_BAR;
 		break;
 	default:
 		break;

@@ -2,19 +2,20 @@
 #include <stddef.h>
 #include "stm32f0xx.h"
 #include "delay.h"
+#include "pwm.h"
 #include "led.h"
 #include "tsc.h"
 #include "i2c.h"
 #include "bme280.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "timers.h"
 #include "main.h"
 
 
-void taskLED(void *pvParameters);
 void taskGetMeas(void *pvParameters);
-void taskTouchHandler(void *pvParameters);
-void taskRTOS(void *pvParameters);
+void taskTouchKeyHandler(void *pvParameters);
+void taskMain(void *pvParameters);
 
 /*********************************************************************/
 
@@ -22,7 +23,9 @@ void taskRTOS(void *pvParameters);
 struct bme280_dev sensor = {0};
 struct bme280_data sensorData = {0};
 TOUCH_STATE_typedef tKeyState = {0};
+MODE_typedef mode = MODE_OFF;
 
+TimerHandle_t timer;
 
 /*************************	FUNCTION	******************************/
 
@@ -67,6 +70,56 @@ int initBME280(void)
 
 
 /**********************************************************************
+*	function name	:	setMode
+*	Description		:	operation mode selection
+*	Arguments		:	none
+*	Return value	:	none
+**********************************************************************/
+void setMode(void)
+{
+	if(tKeyState.shortTouch == SET) {
+		switch(mode) {
+		case MODE_OFF:
+			mode = MODE_TEMP;
+
+			break;
+		case MODE_TEMP:
+			mode = MODE_HUM;
+
+			break;
+		case MODE_HUM:
+			mode = MODE_BAR;
+
+			break;
+		case MODE_BAR:
+			mode = MODE_TEMP;
+
+			break;
+		default:
+			break;
+		}
+
+		tKeyState.shortTouch = RESET;
+	}
+	else if(tKeyState.longTouch == SET) {
+		mode = MODE_GAME;
+
+		tKeyState.longTouch = RESET;
+	}
+}
+/*********************************************************************/
+
+
+/**********************************************************************
+*	function name	:	main
+*	Description		:	main function
+*	Arguments		:	none
+*	Return value	:	none
+**********************************************************************/
+//void (*TimerCallbackFunction_t)( TimerHandle_t xTimer );
+
+
+/**********************************************************************
 *	function name	:	main
 *	Description		:	main function
 *	Arguments		:	none
@@ -76,16 +129,17 @@ int main(void)
 {
 	initLED();
 	initDelayTimer();
+	initPWMTimer();
 	initI2C();
 	initBME280();
 	initTSC();
 
 	xTaskCreate(taskGetMeas, "GET MEAS", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
-	xTaskCreate(taskTouchHandler, "TOUCH HANDLER", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
-	xTaskCreate(taskRTOS, "TASK RTOS", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+	xTaskCreate(taskTouchKeyHandler, "TOUCH HANDLER", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+	xTaskCreate(taskMain, "MAIN", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
 
+//	timer = xTimerCreate("SLEEP TIMER", pdMS_TO_TICKS(6000), pdFalse, (void*)0, pxCallbackFunction);
 
-//	xTaskCreate(taskLED, "LED", 128, NULL, 1, NULL);
 
 	vTaskStartScheduler();
 
@@ -102,110 +156,86 @@ void taskGetMeas(void *pvParameters)
 	}
 }
 
-void taskTouchHandler(void *pvParameters)
+void taskTouchKeyHandler(void *pvParameters)
 {
+	//	reset structure
 	tKeyState.curState = TSC_CHANNEL_EMPTY;
 	tKeyState.prevState = TSC_CHANNEL_EMPTY;
 	tKeyState.shortTouch = RESET;
 	tKeyState.longTouch = RESET;
+	tKeyState.longTouchOnce = RESET;
 	tKeyState.longTouchTimer = 0;
 
+	//	touch key handling
 	while(1) {
+		//	read current touch key state
 		tKeyState.curState = touchKey;
 
+		//	push key detect
 		if((tKeyState.curState == TSC_CHANNEL_DETECT) && (tKeyState.prevState == TSC_CHANNEL_EMPTY)) {
 			tKeyState.longTouchTimer++;
 		}
+		//	release key detect
 		else if((tKeyState.curState == TSC_CHANNEL_EMPTY) && (tKeyState.prevState == TSC_CHANNEL_DETECT)) {
+			//	short touch detect
 			if(tKeyState.longTouchTimer <= LONG_TOUCH_MAX_TIMER) {
 				tKeyState.shortTouch = SET;
 			}
 
+			tKeyState.longTouchOnce = RESET;		//	re-triggering avoid
 			tKeyState.longTouchTimer = 0;
 		}
+		//	hold key detect
 		else if((tKeyState.curState == TSC_CHANNEL_DETECT) && (tKeyState.prevState == TSC_CHANNEL_DETECT)) {
 			tKeyState.longTouchTimer++;
 
-			if(tKeyState.longTouchTimer > LONG_TOUCH_MAX_TIMER) {
+			//	long touch detect
+			if((tKeyState.longTouchTimer > LONG_TOUCH_MAX_TIMER) && (tKeyState.longTouchOnce == RESET)) {
+				tKeyState.longTouchOnce = SET;		//	re-triggering avoid
 				tKeyState.longTouch = SET;
 			}
 		}
 
 		tKeyState.prevState = tKeyState.curState;
 
+		//	 possible bounce avoid
 		vTaskDelay(TOUCH_POLL_FR);
 	}
 }
 
-void taskRTOS(void *pvParameters)
+void taskMain(void *pvParameters)
 {
 	while(1) {
-		if(tKeyState.longTouch == SET) {
-			switchInfoLed(LED_BAR, LED_ON);
-			vTaskDelay(1000);
+		setMode();
 
-			switchInfoLed(LED_BAR, LED_OFF);
-			tKeyState.longTouch = RESET;
+		switch(mode) {
+		case MODE_TEMP:
+			setLedInfo(LED_TEMP, LED_ON);
+			setLedInfo(LED_HUM, LED_OFF);
+			setLedInfo(LED_BAR, LED_OFF);
+
+			setDispNumSmooth((uint32_t)sensorData.temperature);
+
+			break;
+		case MODE_HUM:
+			setLedInfo(LED_TEMP, LED_OFF);
+			setLedInfo(LED_HUM, LED_ON);
+			setLedInfo(LED_BAR, LED_OFF);
+
+			setDispNumSmooth((uint32_t)sensorData.humidity);
+
+			break;
+		case MODE_BAR:
+			setLedInfo(LED_TEMP, LED_OFF);
+			setLedInfo(LED_HUM, LED_OFF);
+			setLedInfo(LED_BAR, LED_ON);
+
+			setDispNumSmooth((uint32_t)sensorData.pressure);
+
+			break;
+		default:
+			break;
 		}
-
-		if(tKeyState.shortTouch == SET) {
-			switchInfoLed(LED_TEMP, LED_ON);
-			vTaskDelay(10);
-
-			switchInfoLed(LED_TEMP, LED_OFF);
-			tKeyState.shortTouch = RESET;
-		}
-
-		taskYIELD();
 	}
 }
 
-
-//*********************************************************************
-void taskLED(void *pvParameters)
-{
-	while(1) {
-		if(touchKey == TSC_CHANNEL_DETECT) {
-			bme280_get_sensor_data(BME280_ALL, &sensorData, &sensor);
-
-			switchInfoLed(LED_TEMP, LED_ON);
-			switchInfoLed(LED_HUM, LED_OFF);
-			switchInfoLed(LED_BAR, LED_OFF);
-			showNumber((uint32_t)sensorData.temperature);
-
-			vTaskDelay(500);
-
-			switchInfoLed(LED_TEMP, LED_OFF);
-			switchInfoLed(LED_HUM, LED_ON);
-			switchInfoLed(LED_BAR, LED_OFF);
-			showNumber((uint32_t)sensorData.humidity);
-
-			vTaskDelay(500);
-
-			switchInfoLed(LED_TEMP, LED_OFF);
-			switchInfoLed(LED_HUM, LED_OFF);
-			switchInfoLed(LED_BAR, LED_ON);
-
-
-			double fPressure = 0;
-			fPressure = sensorData.pressure;
-			fPressure /= 133.322;
-			fPressure =(uint32_t)fPressure % 700;
-			showNumber((uint32_t)fPressure);
-
-			vTaskDelay(500);
-
-			switchInfoLed(LED_TEMP, LED_OFF);
-			switchInfoLed(LED_HUM, LED_OFF);
-			switchInfoLed(LED_BAR, LED_OFF);
-			turnOffDisp();
-		}
-		else {
-			switchInfoLed(LED_TEMP, LED_OFF);
-			switchInfoLed(LED_HUM, LED_OFF);
-			switchInfoLed(LED_BAR, LED_OFF);
-		}
-
-		vTaskDelay(10);
-	}
-}

@@ -1,130 +1,116 @@
 #include "stm32f0xx.h"
 #include "system_stm32f0xx.h"
-#include "delay.h"
+#include "pwm.h"
 
 /*********************************************************************/
 
 /*************************	VARIABLE	******************************/
-volatile uint32_t delayTimerValue = 0;
+volatile uint8_t PWMCount = 0;
 
 /*************************	FUNCTION PROTOTYPE	******************************/
-static void startDelayTimer(void);
-static void stopDelayTimer(void);
 
 /*************************	FUNCTION	******************************/
 
 /**********************************************************************
-* Function name : initDelayTimer
+* Function name : initPWMTimer
 * Description   : delay timer initialization
 * Arguments     : none
 * Return Value  : none
 **********************************************************************/
-void initDelayTimer(void)
+void initPWMTimer(void)
 {
 	//	enable Timer7 clock
-	RCC->APB1ENR |= RCC_APB1ENR_TIM7EN;
+	RCC->APB1ENR |= RCC_APB1ENR_TIM6EN;
 
 	//	set preload value
-	TIM7->ARR = DELAY_TIMER_PRELOAD_VALUE;
+	TIM6->ARR = PWM_TIMER_PRELOAD_VALUE;
 
 	//	set prescaler
-	TIM7->PSC = ((SystemCoreClock / (DELAY_TIMER_PRESC * DELAY_TIMER_PRELOAD_VALUE)) - 1);
+	TIM6->PSC = PWM_TIMER_PRESC;
 
 	//	auto-reload enable
-	TIM7->CR1 |= TIM_CR1_ARPE;
+	TIM6->CR1 |= TIM_CR1_ARPE;
 
 	//	only overflow generates interrupt
-	TIM7->CR1 |= TIM_CR1_URS;
+	TIM6->CR1 |= TIM_CR1_URS;
 
 	//	update event enable
-	TIM7->CR1 &= ~TIM_CR1_UDIS;
+	TIM6->CR1 &= ~TIM_CR1_UDIS;
 
 	//	clear interrupt flag
-	TIM7->SR &= ~TIM_SR_UIF;
+	TIM6->SR &= ~TIM_SR_UIF;
 
 	//	enable interrupt
-	TIM7->DIER |= TIM_DIER_UIE;
+	TIM6->DIER |= TIM_DIER_UIE;
 
-	//	NVIC TIM7 interrupt set
-	NVIC_EnableIRQ(TIM7_IRQn);
-	NVIC_SetPriority(TIM7_IRQn, 11);
+	//	NVIC TIM6 interrupt set
+	NVIC_EnableIRQ(TIM6_IRQn);
+	NVIC_SetPriority(TIM6_IRQn, 12);
 }
 /*********************************************************************/
 
 
 /**********************************************************************
-* Function name : startDelayTimer
+* Function name : startPWMTimer
 * Description   : start timer
 * Arguments     : none
 * Return Value  : none
 **********************************************************************/
-static void startDelayTimer(void)
+void startPWMTimer(void)
 {
 	//	clear interrupt flag
-	TIM7->SR &= ~TIM_SR_UIF;
+	TIM6->SR &= ~TIM_SR_UIF;
 
 	//	clear counter
-	TIM7->CNT = 0;
+	TIM6->CNT = 0;
+
+	//	reset count value
+	PWMCount = 0;
 
 	//	counter enable
-	TIM7->CR1 |= TIM_CR1_CEN;
+	TIM6->CR1 |= TIM_CR1_CEN;
 }
 /*********************************************************************/
 
 
 /**********************************************************************
-* Function name : stopDelayTimer
+* Function name : stopPWMTimer
 * Description   : stop timer
 * Arguments     : none
 * Return Value  : none
 **********************************************************************/
-static void stopDelayTimer(void)
+void stopPWMTimer(void)
 {
 	//	counter disable
-	TIM7->CR1 &= ~TIM_CR1_CEN;
+	TIM6->CR1 &= ~TIM_CR1_CEN;
 
 	//	clear interrupt flag
-	TIM7->SR &= ~TIM_SR_UIF;
+	TIM6->SR &= ~TIM_SR_UIF;
 
 	//	clear counter
-	TIM7->CNT = 0;
+	TIM6->CNT = 0;
+
+	//	reset count value
+	PWMCount = 0;
 }
 /*********************************************************************/
 
 
 /**********************************************************************
-* Function name : delayMs
-* Description   : set delay in milliseconds
-* Arguments     : delay - delay in milliseconds
-* Return Value  : none
-**********************************************************************/
-void delayMs(uint32_t delay)
-{
-	delayTimerValue = delay;
-
-	//	start counter
-	startDelayTimer();
-
-	//	wait until sysTick timer counts down delay value
-	while((delayTimerValue != 0) && (delayTimerValue <= delay));
-
-	//	stop counter
-	stopDelayTimer();
-}
-/*********************************************************************/
-
-
-/**********************************************************************
-* Function name : TIM7_IRQHandler
-* Description   : Timer7 interrupt handle
+* Function name : TIM6_IRQHandler
+* Description   : Timer6 interrupt handle
 * Arguments     : none
 * Return Value  : none
 **********************************************************************/
-void TIM7_IRQHandler(void)
+void TIM6_IRQHandler(void)
 {
-	delayTimerValue--;
+	PWMCount++;
+
+	if(PWMCount == PWM_COUNT_MAX_VALUE) {
+		PWMCount = 0;
+	}
 
 	//	clear interrupt flag
-	TIM7->SR &= ~TIM_SR_UIF;
+	TIM6->SR &= ~TIM_SR_UIF;
 }
 /*********************************************************************/
