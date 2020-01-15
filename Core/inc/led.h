@@ -6,7 +6,7 @@
 //	set segment
 #define SET_DIG_ONE_A (GPIOB->BSRR = GPIO_BSRR_BS_12) 		//	set segment "A" on ONE digit
 #define SET_DIG_ONE_B (GPIOB->BSRR = GPIO_BSRR_BS_11) 		//	set segment "B" on ONE digit
-#define SET_DIG_ONE_C (GPIOA->BSRR = GPIO_BSRR_BS_10) 		//	set segment "C" on ONE digit
+#define SET_DIG_ONE_C (GPIOA->BSRR = GPIO_BSRR_BS_0) 		//	set segment "C" on ONE digit
 #define SET_DIG_ONE_D (GPIOA->BSRR = GPIO_BSRR_BS_1) 		//	set segment "D" on ONE digit
 #define SET_DIG_ONE_E (GPIOA->BSRR = GPIO_BSRR_BS_2) 		//	set segment "E" on ONE digit
 #define SET_DIG_ONE_F (GPIOB->BSRR = GPIO_BSRR_BS_10) 		//	set segment "F" on ONE digit
@@ -23,7 +23,7 @@
 //	reset segment
 #define RESET_DIG_ONE_A (GPIOB->BSRR = GPIO_BSRR_BR_12) 	//	reset segment "A" on ONE digit
 #define RESET_DIG_ONE_B (GPIOB->BSRR = GPIO_BSRR_BR_11) 	//	reset segment "B" on ONE digit
-#define RESET_DIG_ONE_C (GPIOA->BSRR = GPIO_BSRR_BR_10) 	//	reset segment "C" on ONE digit
+#define RESET_DIG_ONE_C (GPIOA->BSRR = GPIO_BSRR_BR_0) 	//	reset segment "C" on ONE digit
 #define RESET_DIG_ONE_D (GPIOA->BSRR = GPIO_BSRR_BR_1) 		//	reset segment "D" on ONE digit
 #define RESET_DIG_ONE_E (GPIOA->BSRR = GPIO_BSRR_BR_2) 		//	reset segment "E" on ONE digit
 #define RESET_DIG_ONE_F (GPIOB->BSRR = GPIO_BSRR_BR_10) 	//	reset segment "F" on ONE digit
@@ -90,5 +90,4 @@ void setSeven(DISP_RANK_typedef rank);
 void setEight(DISP_RANK_typedef rank);
 void setNine(DISP_RANK_typedef rank);
 void setDispNum(uint8_t num);
-void setDispNumSmooth(uint8_t num);
 void setLedInfo(LED_INFO_typedef led, LED_ACT_typedef act);

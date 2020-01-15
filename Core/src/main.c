@@ -2,7 +2,6 @@
 #include <stddef.h>
 #include "stm32f0xx.h"
 #include "delay.h"
-#include "pwm.h"
 #include "led.h"
 #include "tsc.h"
 #include "i2c.h"
@@ -102,7 +101,7 @@ void setMode(void)
 		tKeyState.shortTouch = RESET;
 	}
 	else if(tKeyState.longTouch == SET) {
-		mode = MODE_GAME;
+		mode = MODE_OFF;
 
 		tKeyState.longTouch = RESET;
 	}
@@ -129,7 +128,6 @@ int main(void)
 {
 	initLED();
 	initDelayTimer();
-	initPWMTimer();
 	initI2C();
 	initBME280();
 	initTSC();
@@ -139,7 +137,6 @@ int main(void)
 	xTaskCreate(taskMain, "MAIN", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
 
 //	timer = xTimerCreate("SLEEP TIMER", pdMS_TO_TICKS(6000), pdFalse, (void*)0, pxCallbackFunction);
-
 
 	vTaskStartScheduler();
 
@@ -214,7 +211,7 @@ void taskMain(void *pvParameters)
 			setLedInfo(LED_HUM, LED_OFF);
 			setLedInfo(LED_BAR, LED_OFF);
 
-			setDispNumSmooth((uint32_t)sensorData.temperature);
+			setDispNum((uint32_t)sensorData.temperature);
 
 			break;
 		case MODE_HUM:
@@ -222,7 +219,7 @@ void taskMain(void *pvParameters)
 			setLedInfo(LED_HUM, LED_ON);
 			setLedInfo(LED_BAR, LED_OFF);
 
-			setDispNumSmooth((uint32_t)sensorData.humidity);
+			setDispNum((uint32_t)sensorData.humidity);
 
 			break;
 		case MODE_BAR:
@@ -230,12 +227,21 @@ void taskMain(void *pvParameters)
 			setLedInfo(LED_HUM, LED_OFF);
 			setLedInfo(LED_BAR, LED_ON);
 
-			setDispNumSmooth((uint32_t)sensorData.pressure);
+			setDispNum(((uint32_t)(sensorData.pressure / 133.322) % 700) + 1);
 
+			break;
+		case MODE_OFF:
+			setLedInfo(LED_TEMP, LED_OFF);
+			setLedInfo(LED_HUM, LED_OFF);
+			setLedInfo(LED_BAR, LED_OFF);
+
+			resetDisp();
 			break;
 		default:
 			break;
 		}
+
+		vTaskDelay(10);
 	}
 }
 

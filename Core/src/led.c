@@ -1,6 +1,5 @@
 
 #include <stm32f072xb.h>
-#include "pwm.h"
 #include "led.h"
 
 /*************************	FUNCTIONS PROTOTYPE	******************************/
@@ -531,7 +530,7 @@ void setDispNum(uint8_t num)
 	}
 
 	//	show ten digit sector
-	switch(num % 10) {
+	switch(num / 10) {
 	case 0:
 		setZero(DISP_RANK_TEN);
 		break;
@@ -570,32 +569,6 @@ void setDispNum(uint8_t num)
 
 
 /**********************************************************************
-*	function name	:	setDispNumSmooth
-*	Description		:	smooth set number on LED display
-*	Arguments		:	num - number to display
-*	Return value	:	none
-**********************************************************************/
-void setDispNumSmooth(uint8_t num)
-{
-	startPWMTimer();
-
-	for(uint8_t i = 0; i < PWM_COUNT_MAX_VALUE; i++) {
-		if(i <= PWMCount) {
-			setDispNum(num);
-		}
-		else {
-			resetDisp();
-		}
-	}
-
-	setDispNum(num);
-
-	stopPWMTimer();
-}
-/*********************************************************************/
-
-
-/**********************************************************************
 *	function name	:	setLedInfo
 *	Description		:	turn on/off temperature/humidity/pressure LEDs
 *	Arguments		:	led - temperature/humidity/pressure LED
@@ -611,7 +584,7 @@ void setLedInfo(LED_INFO_typedef led, LED_ACT_typedef act)
 		break;
 	case LED_HUM:
 		if(act == LED_ON) GPIOB->BSRR = SET_LED_HUM;
-		else if(act == LED_OFF) GPIOB->BSRR = RESET_LED_TEMP;
+		else if(act == LED_OFF) GPIOB->BSRR = RESET_LED_HUM;
 		break;
 	case LED_BAR:
 		if(act == LED_ON) GPIOB->BSRR = SET_LED_BAR;
