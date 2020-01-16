@@ -78,6 +78,8 @@ typedef enum {
 
 /*************************	FUNCTIONS PROTOTYPE	******************************/
 void initLED(void);
+void resetDispOne(void);
+void resetDispTen(void);
 void resetDisp(void);
 void setZero(DISP_RANK_typedef rank);
 void setOne(DISP_RANK_typedef rank);

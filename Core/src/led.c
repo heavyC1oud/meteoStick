@@ -74,7 +74,7 @@ void initLED(void)
 *	Arguments		:	none
 *	Return value	:	none
 **********************************************************************/
-static void resetDispOne(void)
+void resetDispOne(void)
 {
 	RESET_DIG_ONE_A;
 	RESET_DIG_ONE_B;
@@ -93,7 +93,7 @@ static void resetDispOne(void)
 *	Arguments		:	none
 *	Return value	:	none
 **********************************************************************/
-static void resetDispTen(void)
+void resetDispTen(void)
 {
 	RESET_DIG_TEN_A;
 	RESET_DIG_TEN_B;

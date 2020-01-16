@@ -6,6 +6,7 @@
 #define SENSOR_POLL_FR 125
 #define TOUCH_POLL_FR 10
 #define LONG_TOUCH_MAX_TIMER (2000 / TOUCH_POLL_FR)
+#define TURN_OFF_TIMER_DELAY 6000
 
 typedef enum {
 	MODE_OFF = 0,
@@ -27,6 +28,7 @@ typedef struct {
 
 
 /*************************	FUNCTIONS PROTOTYPE	******************************/
+void timerCB(TimerHandle_t xTimer);
 int initBME280(void);
 void setMode(void);
 int main(void);

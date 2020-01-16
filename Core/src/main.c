@@ -6,6 +6,7 @@
 #include "tsc.h"
 #include "i2c.h"
 #include "bme280.h"
+#include "game.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "timers.h"
@@ -24,9 +25,22 @@ struct bme280_data sensorData = {0};
 TOUCH_STATE_typedef tKeyState = {0};
 MODE_typedef mode = MODE_OFF;
 
-TimerHandle_t timer;
+TimerHandle_t sleepTimer;
 
 /*************************	FUNCTION	******************************/
+
+/**********************************************************************
+*	function name	:	timerCB
+*	Description		:	timer callback function
+*	Arguments		:	xTimer - software timer instance
+*	Return value	:	none
+**********************************************************************/
+void timerCB(TimerHandle_t xTimer)
+{
+	mode = MODE_OFF;
+}
+/*********************************************************************/
+
 
 /**********************************************************************
 *	function name	:	initBME280
@@ -99,9 +113,11 @@ void setMode(void)
 		}
 
 		tKeyState.shortTouch = RESET;
+
+		xTimerStart(sleepTimer, portMAX_DELAY);
 	}
 	else if(tKeyState.longTouch == SET) {
-		mode = MODE_OFF;
+		mode = MODE_GAME;
 
 		tKeyState.longTouch = RESET;
 	}
@@ -109,13 +125,7 @@ void setMode(void)
 /*********************************************************************/
 
 
-/**********************************************************************
-*	function name	:	main
-*	Description		:	main function
-*	Arguments		:	none
-*	Return value	:	none
-**********************************************************************/
-//void (*TimerCallbackFunction_t)( TimerHandle_t xTimer );
+
 
 
 /**********************************************************************
@@ -136,7 +146,7 @@ int main(void)
 	xTaskCreate(taskTouchKeyHandler, "TOUCH HANDLER", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
 	xTaskCreate(taskMain, "MAIN", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
 
-//	timer = xTimerCreate("SLEEP TIMER", pdMS_TO_TICKS(6000), pdFalse, (void*)0, pxCallbackFunction);
+	sleepTimer = xTimerCreate("SLEEP TIMER", pdMS_TO_TICKS(TURN_OFF_TIMER_DELAY), pdFALSE, (void*)0, timerCB);
 
 	vTaskStartScheduler();
 
@@ -206,6 +216,14 @@ void taskMain(void *pvParameters)
 		setMode();
 
 		switch(mode) {
+		case MODE_OFF:
+			setLedInfo(LED_TEMP, LED_OFF);
+			setLedInfo(LED_HUM, LED_OFF);
+			setLedInfo(LED_BAR, LED_OFF);
+
+			resetDisp();
+
+			break;
 		case MODE_TEMP:
 			setLedInfo(LED_TEMP, LED_ON);
 			setLedInfo(LED_HUM, LED_OFF);
@@ -230,12 +248,15 @@ void taskMain(void *pvParameters)
 			setDispNum(((uint32_t)(sensorData.pressure / 133.322) % 700) + 1);
 
 			break;
-		case MODE_OFF:
+		case MODE_GAME:
 			setLedInfo(LED_TEMP, LED_OFF);
 			setLedInfo(LED_HUM, LED_OFF);
 			setLedInfo(LED_BAR, LED_OFF);
 
 			resetDisp();
+
+			gameMode();
+
 			break;
 		default:
 			break;
