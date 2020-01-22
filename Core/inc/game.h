@@ -8,16 +8,16 @@
 
 
 /*************************	FUNCTIONS PROTOTYPE	******************************/
-void letsRollOne(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop);
-void letsRollTwo(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop);
-void letsRollThee(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop);
-void letsRollFour(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop);
-void letsRollFive(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop);
-void letsRollSix(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop);
-void letsRollSeven(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop);
-void letsRollEight(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop);
-void letsRollNine(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop);
-void letsRollZero(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop);
+void letsRollOne(DISP_RANK_typedef rank, uint32_t delay, FlagStatus show);
+void letsRollTwo(DISP_RANK_typedef rank, uint32_t delay, FlagStatus show);
+void letsRollThree(DISP_RANK_typedef rank, uint32_t delay, FlagStatus show);
+void letsRollFour(DISP_RANK_typedef rank, uint32_t delay, FlagStatus show);
+void letsRollFive(DISP_RANK_typedef rank, uint32_t delay, FlagStatus show);
+void letsRollSix(DISP_RANK_typedef rank, uint32_t delay, FlagStatus show);
+void letsRollSeven(DISP_RANK_typedef rank, uint32_t delay, FlagStatus show);
+void letsRollEight(DISP_RANK_typedef rank, uint32_t delay, FlagStatus show);
+void letsRollNine(DISP_RANK_typedef rank, uint32_t delay, FlagStatus show);
+void letsRollZero(DISP_RANK_typedef rank, uint32_t delay, FlagStatus show);
 void stepLED(DISP_RANK_typedef rank, FlagStatus a, FlagStatus b, FlagStatus c, FlagStatus d, FlagStatus e, FlagStatus f, FlagStatus g, uint32_t delay);
 
 void gameMode(void);

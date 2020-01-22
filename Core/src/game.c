@@ -11,15 +11,17 @@
 *	Description		:	rolling "1" numeral
 *	Arguments		:	rank - ONE/TEN digit
 *					:	delay - roll speed
-*					:	stop - stop rolling on numeral
+*					:	show - show/hide digit
 *	Return value	:	none
 **********************************************************************/
-void letsRollOne(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop)
+void letsRollOne(DISP_RANK_typedef rank, uint32_t delay, FlagStatus show)
 {
-	stepLED(rank, RESET, SET, RESET, RESET, RESET, RESET, RESET, delay);			//	B
-	stepLED(rank, RESET, SET, SET, RESET, RESET, RESET, RESET, delay);				//	B C
-
-	if(stop == RESET) {
+	if(show == SET) {
+		stepLED(rank, RESET, SET, RESET, RESET, RESET, RESET, RESET, delay);		//	B
+		stepLED(rank, RESET, SET, SET, RESET, RESET, RESET, RESET, delay);			//	B C
+	}
+	else {
+		stepLED(rank, RESET, SET, SET, RESET, RESET, RESET, RESET, delay);			//	B C
 		stepLED(rank, RESET, RESET, SET, RESET, RESET, RESET, RESET, delay);		//	C
 		stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET, delay);		//	none
 	}
@@ -32,17 +34,23 @@ void letsRollOne(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop)
 *	Description		:	rolling "2" numeral
 *	Arguments		:	rank - ONE/TEN digit
 *					:	delay - roll speed
-*					:	stop - stop rolling on numeral
+*					:	show - show/hide digit
 *	Return value	:	none
 **********************************************************************/
-void letsRollTwo(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop)
+void letsRollTwo(DISP_RANK_typedef rank, uint32_t delay, FlagStatus show)
 {
-	stepLED(rank, SET, RESET, RESET, RESET, RESET, RESET, RESET, delay);			//	A
-	stepLED(rank, SET, RESET, RESET, RESET, RESET, SET, SET, delay);				//	F G
-	stepLED(rank, SET, SET, RESET, SET, SET, RESET, SET, delay);					//	A B D E G
-
-	if(stop == RESET) {
-		stepLED(rank, RESET, RESET, SET, SET, RESET, RESET, SET, delay);			//	C D G
+	if(show == SET) {
+		stepLED(rank, SET, RESET, RESET, RESET, RESET, RESET, RESET, delay);		//	A
+		stepLED(rank, SET, SET, RESET, RESET, RESET, RESET, RESET, delay);			//	A B
+		stepLED(rank, SET, SET, RESET, RESET, RESET, RESET, SET, delay);			//	A B G
+		stepLED(rank, SET, SET, RESET, RESET, SET, RESET, SET, delay);				//	A B E G
+		stepLED(rank, SET, SET, RESET, SET, SET, RESET, SET, delay);				//	A B D E G
+	}
+	else {
+		stepLED(rank, SET, SET, RESET, SET, SET, RESET, SET, delay);				//	A B D E G
+		stepLED(rank, RESET, SET, RESET, SET, SET, RESET, SET, delay);				//	B D E G
+		stepLED(rank, RESET, RESET, RESET, SET, SET, RESET, SET, delay);			//	D E G
+		stepLED(rank, RESET, RESET, RESET, SET, SET, RESET, RESET, delay);			//	D E
 		stepLED(rank, RESET, RESET, RESET, SET, RESET, RESET, RESET, delay);		//	D
 		stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET, delay);		//	none
 	}
@@ -55,17 +63,23 @@ void letsRollTwo(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop)
 *	Description		:	rolling "3" numeral
 *	Arguments		:	rank - ONE/TEN digit
 *					:	delay - roll speed
-*					:	stop - stop rolling on numeral
+*					:	show - show/hide digit
 *	Return value	:	none
 **********************************************************************/
-void letsRollThree(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop)
+void letsRollThree(DISP_RANK_typedef rank, uint32_t delay, FlagStatus show)
 {
-	stepLED(rank, SET, RESET, RESET, RESET, RESET, RESET, RESET, delay);			//	A
-	stepLED(rank, SET, SET, RESET, RESET, RESET, RESET, SET, delay);				//	A B G
-	stepLED(rank, SET, SET, SET, SET, RESET, RESET, SET, delay);					//	A B C D G
-
-	if(stop == RESET) {
+	if(show == SET) {
+		stepLED(rank, SET, RESET, RESET, RESET, RESET, RESET, RESET, delay);		//	A
+		stepLED(rank, SET, SET, RESET, RESET, RESET, RESET, RESET, delay);			//	A B
+		stepLED(rank, SET, SET, RESET, RESET, RESET, RESET, SET, delay);			//	A B G
+		stepLED(rank, SET, SET, SET, RESET, RESET, RESET, SET, delay);				//	A B C G
+		stepLED(rank, SET, SET, SET, SET, RESET, RESET, SET, delay);				//	A B C D G
+	}
+	else {
+		stepLED(rank, SET, SET, SET, SET, RESET, RESET, SET, delay);				//	A B C D G
+		stepLED(rank, RESET, SET, SET, SET, RESET, RESET, SET, delay);				//	B C D G
 		stepLED(rank, RESET, RESET, SET, SET, RESET, RESET, SET, delay);			//	C D G
+		stepLED(rank, RESET, RESET, SET, SET, RESET, RESET, RESET, delay);			//	C D
 		stepLED(rank, RESET, RESET, RESET, SET, RESET, RESET, RESET, delay);		//	D
 		stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET, delay);		//	none
 	}
@@ -78,16 +92,20 @@ void letsRollThree(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop)
 *	Description		:	rolling "4" numeral
 *	Arguments		:	rank - ONE/TEN digit
 *					:	delay - roll speed
-*					:	stop - stop rolling on numeral
+*					:	show - show/hide digit
 *	Return value	:	none
 **********************************************************************/
-void letsRollFour(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop)
+void letsRollFour(DISP_RANK_typedef rank, uint32_t delay, FlagStatus show)
 {
-	stepLED(rank, RESET, SET, RESET, RESET, RESET, RESET, RESET, delay);			//	B
-	stepLED(rank, RESET, SET, SET, RESET, RESET, SET, SET, delay);					//	B C F G
-
-	if(stop == RESET) {
-		stepLED(rank, RESET, RESET, SET, SET, SET, RESET, RESET, delay);			//	C D E
+	if(show == SET) {
+		stepLED(rank, RESET, SET, RESET, RESET, RESET, SET, RESET, delay);			//	B F
+		stepLED(rank, RESET, SET, RESET, RESET, RESET, SET, SET, delay);			//	B F G
+		stepLED(rank, RESET, SET, SET, RESET, RESET, SET, SET, delay);				//	B C F G
+	}
+	else {
+		stepLED(rank, RESET, SET, SET, RESET, RESET, SET, SET, delay);				//	B C F G
+		stepLED(rank, RESET, RESET, SET, RESET, RESET, RESET, SET, delay);			//	C G
+		stepLED(rank, RESET, RESET, SET, RESET, RESET, RESET, RESET, delay);		//	C
 		stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET, delay);		//	none
 	}
 }
@@ -99,17 +117,23 @@ void letsRollFour(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop)
 *	Description		:	rolling "5" numeral
 *	Arguments		:	rank - ONE/TEN digit
 *					:	delay - roll speed
-*					:	stop - stop rolling on numeral
+*					:	show - show/hide digit
 *	Return value	:	none
 **********************************************************************/
-void letsRollFive(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop)
+void letsRollFive(DISP_RANK_typedef rank, uint32_t delay, FlagStatus show)
 {
-	stepLED(rank, SET, RESET, RESET, RESET, RESET, RESET, RESET, delay);			//	A
-	stepLED(rank, SET, SET, RESET, RESET, RESET, RESET, SET, delay);				//	A B G
-	stepLED(rank, SET, RESET, SET, SET, RESET, SET, SET, delay);					//	A C D F G
-
-	if(stop == RESET) {
-		stepLED(rank, RESET, RESET, RESET, SET, SET, RESET, SET, delay);			//	D E G
+	if(show == SET) {
+		stepLED(rank, SET, RESET, RESET, RESET, RESET, RESET, RESET, delay);		//	A
+		stepLED(rank, SET, RESET, RESET, RESET, RESET, SET, RESET, delay);			//	A F
+		stepLED(rank, SET, RESET, RESET, RESET, RESET, SET, SET, delay);			//	A F G
+		stepLED(rank, SET, RESET, SET, RESET, RESET, SET, SET, delay);				//	A C F G
+		stepLED(rank, SET, RESET, SET, SET, RESET, SET, SET, delay);				//	A C D F G
+	}
+	else {
+		stepLED(rank, SET, RESET, SET, SET, RESET, SET, SET, delay);				//	A C D F G
+		stepLED(rank, RESET, RESET, SET, SET, RESET, SET, SET, delay);				//	C D F G
+		stepLED(rank, RESET, RESET, SET, SET, RESET, RESET, SET, delay);			//	C D G
+		stepLED(rank, RESET, RESET, SET, SET, RESET, RESET, RESET, delay);			//	C D
 		stepLED(rank, RESET, RESET, RESET, SET, RESET, RESET, RESET, delay);		//	D
 		stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET, delay);		//	none
 	}
@@ -122,17 +146,23 @@ void letsRollFive(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop)
 *	Description		:	rolling "6" numeral
 *	Arguments		:	rank - ONE/TEN digit
 *					:	delay - roll speed
-*					:	stop - stop rolling on numeral
+*					:	show - show/hide digit
 *	Return value	:	none
 **********************************************************************/
-void letsRollSix(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop)
+void letsRollSix(DISP_RANK_typedef rank, uint32_t delay, FlagStatus show)
 {
-	stepLED(rank, SET, RESET, RESET, RESET, RESET, RESET, RESET, delay);			//	A
-	stepLED(rank, SET, SET, RESET, RESET, RESET, SET, SET, delay);					//	A B F G
-	stepLED(rank, SET, RESET, SET, SET, SET, SET, SET, delay);						//	A C D E F G
-
-	if(stop == RESET) {
-		stepLED(rank, RESET, RESET, RESET, SET, SET, RESET, SET, delay);			//	D E G
+	if(show == SET) {
+		stepLED(rank, SET, RESET, RESET, RESET, RESET, RESET, RESET, delay);		//	A
+		stepLED(rank, SET, RESET, RESET, RESET, RESET, SET, RESET, delay);			//	A F
+		stepLED(rank, SET, RESET, RESET, RESET, RESET, SET, SET, delay);			//	A F G
+		stepLED(rank, SET, RESET, SET, RESET, SET, SET, SET, delay);				//	A C E F G
+		stepLED(rank, SET, RESET, SET, SET, SET, SET, SET, delay);					//	A C D E F G
+	}
+	else {
+		stepLED(rank, SET, RESET, SET, SET, SET, SET, SET, delay);					//	A C D E F G
+		stepLED(rank, RESET, RESET, SET, SET, SET, SET, SET, delay);				//	C D E F G
+		stepLED(rank, RESET, RESET, SET, SET, SET, RESET, SET, delay);				//	C D E G
+		stepLED(rank, RESET, RESET, SET, SET, SET, RESET, RESET, delay);			//	C D E
 		stepLED(rank, RESET, RESET, RESET, SET, RESET, RESET, RESET, delay);		//	D
 		stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET, delay);		//	none
 	}
@@ -145,17 +175,20 @@ void letsRollSix(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop)
 *	Description		:	rolling "7" numeral
 *	Arguments		:	rank - ONE/TEN digit
 *					:	delay - roll speed
-*					:	stop - stop rolling on numeral
+*					:	show - show/hide digit
 *	Return value	:	none
 **********************************************************************/
-void letsRollSeven(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop)
+void letsRollSeven(DISP_RANK_typedef rank, uint32_t delay, FlagStatus show)
 {
-	stepLED(rank, RESET, SET, RESET, RESET, RESET, RESET, RESET, delay);			//	B
-	stepLED(rank, SET, SET, SET, RESET, RESET, RESET, RESET, delay);				//	A B C
-
-	if(stop == RESET) {
-		stepLED(rank, RESET, RESET, SET, RESET, RESET, RESET, SET, delay);			//	C G
-		stepLED(rank, RESET, RESET, RESET, SET, RESET, RESET, RESET, delay);		//	D
+	if(show == SET) {
+		stepLED(rank, SET, RESET, RESET, RESET, RESET, RESET, RESET, delay);		//	A
+		stepLED(rank, SET, SET, RESET, RESET, RESET, RESET, RESET, delay);			//	A B
+		stepLED(rank, SET, SET, SET, RESET, RESET, RESET, RESET, delay);			//	A B C
+	}
+	else {
+		stepLED(rank, SET, SET, SET, RESET, RESET, RESET, RESET, delay);			//	A B C
+		stepLED(rank, RESET, SET, SET, RESET, RESET, RESET, RESET, delay);			//	B C
+		stepLED(rank, RESET, RESET, SET, RESET, RESET, RESET, RESET, delay);		//	C
 		stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET, delay);		//	none
 	}
 }
@@ -167,17 +200,23 @@ void letsRollSeven(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop)
 *	Description		:	rolling "8" numeral
 *	Arguments		:	rank - ONE/TEN digit
 *					:	delay - roll speed
-*					:	stop - stop rolling on numeral
+*					:	show - show/hide digit
 *	Return value	:	none
 **********************************************************************/
-void letsRollEight(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop)
+void letsRollEight(DISP_RANK_typedef rank, uint32_t delay, FlagStatus show)
 {
-	stepLED(rank, SET, RESET, RESET, RESET, RESET, RESET, RESET, delay);			//	A
-	stepLED(rank, SET, SET, RESET, RESET, RESET, SET, SET, delay);					//	A B F G
-	stepLED(rank, SET, SET, SET, SET, SET, SET, SET, delay);						//	A B C D E F G
-
-	if(stop == RESET) {
+	if(show == SET) {
+		stepLED(rank, SET, RESET, RESET, RESET, RESET, RESET, RESET, delay);		//	A
+		stepLED(rank, SET, SET, RESET, RESET, RESET, SET, RESET, delay);			//	A B F
+		stepLED(rank, SET, SET, RESET, RESET, RESET, SET, SET, delay);				//	A B F G
+		stepLED(rank, SET, SET, SET, RESET, SET, SET, SET, delay);					//	A B C E F G
+		stepLED(rank, SET, SET, SET, SET, SET, SET, SET, delay);					//	A B C D E F G
+	}
+	else {
+		stepLED(rank, SET, SET, SET, SET, SET, SET, SET, delay);					//	A B C D E F G
+		stepLED(rank, RESET, SET, SET, SET, SET, SET, SET, delay);					//	B C D E F G
 		stepLED(rank, RESET, RESET, SET, SET, SET, RESET, SET, delay);				//	C D E G
+		stepLED(rank, RESET, RESET, SET, SET, SET, RESET,RESET, delay);				//	C D E
 		stepLED(rank, RESET, RESET, RESET, SET, RESET, RESET, RESET, delay);		//	D
 		stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET, delay);		//	none
 	}
@@ -190,17 +229,22 @@ void letsRollEight(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop)
 *	Description		:	rolling "9" numeral
 *	Arguments		:	rank - ONE/TEN digit
 *					:	delay - roll speed
-*					:	stop - stop rolling on numeral
+*					:	show - show/hide digit
 *	Return value	:	none
 **********************************************************************/
-void letsRollNine(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop)
+void letsRollNine(DISP_RANK_typedef rank, uint32_t delay, FlagStatus show)
 {
-	stepLED(rank, SET, RESET, RESET, RESET, RESET, RESET, RESET, delay);			//	A
-	stepLED(rank, SET, SET, RESET, RESET, RESET, RESET, SET, delay);				//	A B G
-	stepLED(rank, SET, SET, SET, SET, RESET, SET, SET, delay);						//	A B C D F G
-
-	if(stop == RESET) {
-		stepLED(rank, RESET, RESET, SET, SET, SET, RESET, SET, delay);				//	C D E G
+	if(show == SET) {
+		stepLED(rank, SET, RESET, RESET, RESET, RESET, RESET, RESET, delay);		//	A
+		stepLED(rank, SET, SET, RESET, RESET, RESET, SET, RESET, delay);			//	A B F
+		stepLED(rank, SET, SET, RESET, RESET, RESET, SET, SET, delay);				//	A B F G
+		stepLED(rank, SET, SET, SET, RESET, RESET, SET, SET, delay);				//	A B C F G
+		stepLED(rank, SET, SET, SET, SET, RESET, SET, SET, delay);					//	A B C D F G
+	}
+	else {
+		stepLED(rank, SET, SET, SET, SET, RESET, SET, SET, delay);					//	A B C D F G
+		stepLED(rank, RESET, SET, SET, SET, RESET, SET, SET, delay);				//	B C D F G
+		stepLED(rank, RESET, RESET, SET, SET, RESET, RESET, SET, delay);			//	C D G
 		stepLED(rank, RESET, RESET, RESET, SET, RESET, RESET, RESET, delay);		//	D
 		stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET, delay);		//	none
 	}
@@ -213,17 +257,21 @@ void letsRollNine(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop)
 *	Description		:	rolling "0" numeral
 *	Arguments		:	rank - ONE/TEN digit
 *					:	delay - roll speed
-*					:	stop - stop rolling on numeral
+*					:	show - show/hide digit
 *	Return value	:	none
 **********************************************************************/
-void letsRollZero(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop)
+void letsRollZero(DISP_RANK_typedef rank, uint32_t delay, FlagStatus show)
 {
-	stepLED(rank, SET, RESET, RESET, RESET, RESET, RESET, RESET, delay);			//	A
-	stepLED(rank, RESET, SET, RESET, RESET, RESET, SET, SET, delay);				//	B F G
-	stepLED(rank, SET, SET, SET, SET, SET, SET, RESET, delay);						//	A B C D E F
-
-	if(stop == RESET) {
-		stepLED(rank, RESET, RESET, SET, RESET, SET, RESET, SET, delay);			//	C E G
+	if(show == SET) {
+		stepLED(rank, SET, RESET, RESET, RESET, RESET, RESET, RESET, delay);		//	A
+		stepLED(rank, SET, SET, RESET, RESET, RESET, SET, RESET, delay);			//	A B F
+		stepLED(rank, SET, SET, SET, RESET, SET, SET, RESET, delay);				//	A B C E F
+		stepLED(rank, SET, SET, SET, SET, SET, SET, RESET, delay);					//	A B C D E F
+	}
+	else {
+		stepLED(rank, SET, SET, SET, SET, SET, SET, RESET, delay);					//	A B C D E F
+		stepLED(rank, RESET, SET, SET, SET, SET, SET, RESET, delay);				//	B C D E F
+		stepLED(rank, RESET, RESET, SET, SET, SET, RESET, RESET, delay);			//	C D E
 		stepLED(rank, RESET, RESET, RESET, SET, RESET, RESET, RESET, delay);		//	D
 		stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET, delay);		//	none
 	}
@@ -330,25 +378,65 @@ void gameMode(void)
 //	}
 
 	while(1) {
+		letsRollOne(DISP_RANK_ONE, ROLL_DELAY, SET);
+		delayMs(1000);
 		letsRollOne(DISP_RANK_ONE, ROLL_DELAY, RESET);
-		letsRollTwo(DISP_RANK_ONE, ROLL_DELAY, RESET);
-		letsRollThree(DISP_RANK_ONE, ROLL_DELAY, RESET);
-		letsRollFour(DISP_RANK_ONE, ROLL_DELAY, RESET);
-		letsRollFive(DISP_RANK_ONE, ROLL_DELAY, RESET);
-		letsRollSix(DISP_RANK_ONE, ROLL_DELAY, RESET);
-		letsRollSeven(DISP_RANK_ONE, ROLL_DELAY, RESET);
-		letsRollEight(DISP_RANK_ONE, ROLL_DELAY, RESET);
-		letsRollNine(DISP_RANK_ONE, ROLL_DELAY, SET);
+		delayMs(1000);
 
-		letsRollOne(DISP_RANK_TEN, ROLL_DELAY, RESET);
-		letsRollTwo(DISP_RANK_TEN, ROLL_DELAY, RESET);
-		letsRollThree(DISP_RANK_TEN, ROLL_DELAY, RESET);
-		letsRollFour(DISP_RANK_TEN, ROLL_DELAY, RESET);
-		letsRollFive(DISP_RANK_TEN, ROLL_DELAY, RESET);
-		letsRollSix(DISP_RANK_TEN, ROLL_DELAY, RESET);
-		letsRollSeven(DISP_RANK_TEN, ROLL_DELAY, RESET);
-		letsRollEight(DISP_RANK_TEN, ROLL_DELAY, RESET);
-		letsRollNine(DISP_RANK_TEN, ROLL_DELAY, SET);
+		letsRollTwo(DISP_RANK_ONE, ROLL_DELAY, SET);
+		delayMs(1000);
+		letsRollTwo(DISP_RANK_ONE, ROLL_DELAY, RESET);
+		delayMs(1000);
+
+		letsRollThree(DISP_RANK_ONE, ROLL_DELAY, SET);
+		delayMs(1000);
+		letsRollThree(DISP_RANK_ONE, ROLL_DELAY, RESET);
+		delayMs(1000);
+
+		letsRollFour(DISP_RANK_ONE, ROLL_DELAY, SET);
+		delayMs(1000);
+		letsRollFour(DISP_RANK_ONE, ROLL_DELAY, RESET);
+		delayMs(1000);
+
+		letsRollFive(DISP_RANK_ONE, ROLL_DELAY, SET);
+		delayMs(1000);
+		letsRollFive(DISP_RANK_ONE, ROLL_DELAY, RESET);
+		delayMs(1000);
+
+		letsRollSix(DISP_RANK_ONE, ROLL_DELAY, SET);
+		delayMs(1000);
+		letsRollSix(DISP_RANK_ONE, ROLL_DELAY, RESET);
+		delayMs(1000);
+
+		letsRollSeven(DISP_RANK_ONE, ROLL_DELAY, SET);
+		delayMs(1000);
+		letsRollSeven(DISP_RANK_ONE, ROLL_DELAY, RESET);
+		delayMs(1000);
+
+		letsRollEight(DISP_RANK_ONE, ROLL_DELAY, SET);
+		delayMs(1000);
+		letsRollEight(DISP_RANK_ONE, ROLL_DELAY, RESET);
+		delayMs(1000);
+
+		letsRollNine(DISP_RANK_ONE, ROLL_DELAY, SET);
+		delayMs(1000);
+		letsRollNine(DISP_RANK_ONE, ROLL_DELAY, RESET);
+		delayMs(1000);
+
+		letsRollZero(DISP_RANK_ONE, ROLL_DELAY, SET);
+		delayMs(1000);
+		letsRollZero(DISP_RANK_ONE, ROLL_DELAY, RESET);
+		delayMs(1000);
+
+//		letsRollOne(DISP_RANK_TEN, ROLL_DELAY, RESET);
+//		letsRollTwo(DISP_RANK_TEN, ROLL_DELAY, RESET);
+//		letsRollThree(DISP_RANK_TEN, ROLL_DELAY, RESET);
+//		letsRollFour(DISP_RANK_TEN, ROLL_DELAY, RESET);
+//		letsRollFive(DISP_RANK_TEN, ROLL_DELAY, RESET);
+//		letsRollSix(DISP_RANK_TEN, ROLL_DELAY, RESET);
+//		letsRollSeven(DISP_RANK_TEN, ROLL_DELAY, RESET);
+//		letsRollEight(DISP_RANK_TEN, ROLL_DELAY, RESET);
+//		letsRollNine(DISP_RANK_TEN, ROLL_DELAY, SET);
 	}
 }
 /*********************************************************************/
