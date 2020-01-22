@@ -6,13 +6,12 @@
 #include "tsc.h"
 #include "i2c.h"
 #include "bme280.h"
-#include "game.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "timers.h"
 #include "main.h"
 
-
+void taskShowDisplay(void *pvParameters);
 void taskGetMeas(void *pvParameters);
 void taskTouchKeyHandler(void *pvParameters);
 void taskMain(void *pvParameters);
@@ -28,6 +27,7 @@ MODE_typedef mode = MODE_OFF;
 
 TimerHandle_t sleepTimer;
 
+uint32_t dispData = 0;
 /*************************	FUNCTION	******************************/
 
 /**********************************************************************
@@ -181,12 +181,22 @@ int main(void)
 	xTaskCreate(taskMain, "MAIN", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
 	xTaskCreate(taskRefreshWDT, "REFRESH_WDT", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
 
+	xTaskCreate(taskShowDisplay, "REFRESH_WDT", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+
 	sleepTimer = xTimerCreate("SLEEP TIMER", pdMS_TO_TICKS(TURN_OFF_TIMER_DELAY), pdFALSE, (void*)0, timerCB);
 
 	vTaskStartScheduler();
 
 	while(1);
 
+}
+
+
+void taskShowDisplay(void *pvParameters)
+{
+	while(1) {
+		setDispNum(dispData);
+	}
 }
 
 
@@ -272,7 +282,8 @@ void taskMain(void *pvParameters)
 			setLedInfo(LED_HUM, LED_OFF);
 			setLedInfo(LED_BAR, LED_OFF);
 
-			setDispNum((uint32_t)sensorData.temperature);
+//			setDispNum1((uint32_t)sensorData.temperature);
+			dispData = sensorData.temperature;
 
 			break;
 		case MODE_HUM:
@@ -280,7 +291,8 @@ void taskMain(void *pvParameters)
 			setLedInfo(LED_HUM, LED_ON);
 			setLedInfo(LED_BAR, LED_OFF);
 
-			setDispNum((uint32_t)sensorData.humidity);
+//			setDispNum1((uint32_t)sensorData.humidity);
+			dispData = sensorData.humidity;
 
 			break;
 		case MODE_BAR:
@@ -288,7 +300,8 @@ void taskMain(void *pvParameters)
 			setLedInfo(LED_HUM, LED_OFF);
 			setLedInfo(LED_BAR, LED_ON);
 
-			setDispNum(((uint32_t)(sensorData.pressure / 133.322) % 700) + 1);
+//			setDispNum1(((uint32_t)(sensorData.pressure / 133.322) % 700) + 1);
+			dispData = (((uint32_t)(sensorData.pressure / 133.322) % 700) + 1);
 
 			break;
 		case MODE_GAME:

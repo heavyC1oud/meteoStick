@@ -1,6 +1,9 @@
 
-#include <stm32f072xb.h>
+#include "stm32f0xx.h"
+#include "delay.h"
 #include "led.h"
+
+void (*pRollDigit[10])(DISP_RANK_typedef, LED_STEP_typedef, FlagStatus);
 
 /*************************	FUNCTIONS PROTOTYPE	******************************/
 
@@ -63,6 +66,17 @@ void initLED(void)
 					  GPIO_PUPDR_PUPDR15);
 
 	resetDisp();
+
+	pRollDigit[0] = letsRollZero;
+	pRollDigit[1] = letsRollOne;
+	pRollDigit[2] = letsRollTwo;
+	pRollDigit[3] = letsRollThree;
+	pRollDigit[4] = letsRollFour;
+	pRollDigit[5] = letsRollFive;
+	pRollDigit[6] = letsRollSix;
+	pRollDigit[7] = letsRollSeven;
+	pRollDigit[8] = letsRollEight;
+	pRollDigit[9] = letsRollNine;
 }
 /*********************************************************************/
 
@@ -590,6 +604,468 @@ void setLedInfo(LED_INFO_typedef led, LED_ACT_typedef act)
 		break;
 	default:
 		break;
+	}
+}
+/*********************************************************************/
+
+
+/**********************************************************************
+*	function name	:	letsRollOne
+*	Description		:	rolling "1" numeral
+*	Arguments		:	rank - ONE/TEN digit
+*					:	step - current step number
+*					:	show - show/hide digit
+*	Return value	:	none
+**********************************************************************/
+void letsRollOne(DISP_RANK_typedef rank, LED_STEP_typedef step, FlagStatus show)
+{
+	if(show == SET) {
+		if(step == LED_STEP_1) 		stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET);		//	none
+		else if(step == LED_STEP_2) stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET);		//	none
+		else if(step == LED_STEP_3)	stepLED(rank, RESET, SET, RESET, RESET, RESET, RESET, RESET);		//	B
+		else if(step == LED_STEP_4)	stepLED(rank, RESET, SET, RESET, RESET, RESET, RESET, RESET);		//	B
+		else if(step == LED_STEP_5)	stepLED(rank, RESET, SET, SET, RESET, RESET, RESET, RESET);			//	B C
+		else if(step == LED_STEP_6)	stepLED(rank, RESET, SET, SET, RESET, RESET, RESET, RESET);			//	B C
+	}
+	else {
+		if(step == LED_STEP_1) 		stepLED(rank, RESET, SET, SET, RESET, RESET, RESET, RESET);			//	B C
+		else if(step == LED_STEP_2) stepLED(rank, RESET, SET, SET, RESET, RESET, RESET, RESET);			//	B C
+		else if(step == LED_STEP_3) stepLED(rank, RESET, RESET, SET, RESET, RESET, RESET, RESET);		//	C
+		else if(step == LED_STEP_4) stepLED(rank, RESET, RESET, SET, RESET, RESET, RESET, RESET);		//	C
+		else if(step == LED_STEP_5) stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET);		//	none
+		else if(step == LED_STEP_6) stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET);		//	none
+	}
+}
+/*********************************************************************/
+
+
+/**********************************************************************
+*	function name	:	letsRollTwo
+*	Description		:	rolling "2" numeral
+*	Arguments		:	rank - ONE/TEN digit
+*					:	step - current step number
+*					:	show - show/hide digit
+*	Return value	:	none
+**********************************************************************/
+void letsRollTwo(DISP_RANK_typedef rank, LED_STEP_typedef step, FlagStatus show)
+{
+	if(show == SET) {
+		if(step == LED_STEP_1) 		stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET);		//	none
+		else if(step == LED_STEP_2) stepLED(rank, SET, RESET, RESET, RESET, RESET, RESET, RESET);		//	A
+		else if(step == LED_STEP_3)	stepLED(rank, SET, SET, RESET, RESET, RESET, RESET, RESET);			//	A B
+		else if(step == LED_STEP_4)	stepLED(rank, SET, SET, RESET, RESET, RESET, RESET, SET);			//	A B G
+		else if(step == LED_STEP_5)	stepLED(rank, SET, SET, RESET, RESET, SET, RESET, SET);				//	A B E G
+		else if(step == LED_STEP_6)	stepLED(rank, SET, SET, RESET, SET, SET, RESET, SET);				//	A B D E G
+	}
+	else {
+		if(step == LED_STEP_1)		stepLED(rank, SET, SET, RESET, SET, SET, RESET, SET);				//	A B D E G
+		else if(step == LED_STEP_2)	stepLED(rank, RESET, SET, RESET, SET, SET, RESET, SET);				//	B D E G
+		else if(step == LED_STEP_3)	stepLED(rank, RESET, RESET, RESET, SET, SET, RESET, SET);			//	D E G
+		else if(step == LED_STEP_4)	stepLED(rank, RESET, RESET, RESET, SET, SET, RESET, RESET);			//	D E
+		else if(step == LED_STEP_5)	stepLED(rank, RESET, RESET, RESET, SET, RESET, RESET, RESET);		//	D
+		else if(step == LED_STEP_6)	stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET);		//	none
+	}
+}
+/*********************************************************************/
+
+
+/**********************************************************************
+*	function name	:	letsRollThree
+*	Description		:	rolling "3" numeral
+*	Arguments		:	rank - ONE/TEN digit
+*					:	step - current step number
+*					:	show - show/hide digit
+*	Return value	:	none
+**********************************************************************/
+void letsRollThree(DISP_RANK_typedef rank, LED_STEP_typedef step, FlagStatus show)
+{
+	if(show == SET) {
+		if(step == LED_STEP_1) 		stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET);		//	none
+		else if(step == LED_STEP_2)	stepLED(rank, SET, RESET, RESET, RESET, RESET, RESET, RESET);		//	A
+		else if(step == LED_STEP_3)	stepLED(rank, SET, SET, RESET, RESET, RESET, RESET, RESET);			//	A B
+		else if(step == LED_STEP_4)	stepLED(rank, SET, SET, RESET, RESET, RESET, RESET, SET);			//	A B G
+		else if(step == LED_STEP_5)	stepLED(rank, SET, SET, SET, RESET, RESET, RESET, SET);				//	A B C G
+		else if(step == LED_STEP_6)	stepLED(rank, SET, SET, SET, SET, RESET, RESET, SET);				//	A B C D G
+	}
+	else {
+		if(step == LED_STEP_1) 		stepLED(rank, SET, SET, SET, SET, RESET, RESET, SET);				//	A B C D G
+		else if(step == LED_STEP_2)	stepLED(rank, RESET, SET, SET, SET, RESET, RESET, SET);				//	B C D G
+		else if(step == LED_STEP_3)	stepLED(rank, RESET, RESET, SET, SET, RESET, RESET, SET);			//	C D G
+		else if(step == LED_STEP_4)	stepLED(rank, RESET, RESET, SET, SET, RESET, RESET, RESET);			//	C D
+		else if(step == LED_STEP_5)	stepLED(rank, RESET, RESET, RESET, SET, RESET, RESET, RESET);		//	D
+		else if(step == LED_STEP_6)	stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET);		//	none
+	}
+}
+/*********************************************************************/
+
+
+/**********************************************************************
+*	function name	:	letsRollFour
+*	Description		:	rolling "4" numeral
+*	Arguments		:	rank - ONE/TEN digit
+*					:	step - current step number
+*					:	show - show/hide digit
+*	Return value	:	none
+**********************************************************************/
+void letsRollFour(DISP_RANK_typedef rank, LED_STEP_typedef step, FlagStatus show)
+{
+	if(show == SET) {
+		if(step == LED_STEP_1) 		stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET);		//	none
+		else if(step == LED_STEP_2)	stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET);		//	none
+		else if(step == LED_STEP_3)	stepLED(rank, RESET, SET, RESET, RESET, RESET, SET, RESET);			//	B F
+		else if(step == LED_STEP_4)	stepLED(rank, RESET, SET, RESET, RESET, RESET, SET, SET);			//	B F G
+		else if(step == LED_STEP_5)	stepLED(rank, RESET, SET, SET, RESET, RESET, SET, SET);				//	B C F G
+		else if(step == LED_STEP_6)	stepLED(rank, RESET, SET, SET, RESET, RESET, SET, SET);				//	B C F G
+	}
+	else {
+		if(step == LED_STEP_1) 		stepLED(rank, RESET, SET, SET, RESET, RESET, SET, SET);				//	B C F G
+		else if(step == LED_STEP_2)	stepLED(rank, RESET, SET, SET, RESET, RESET, SET, SET);				//	B C F G
+		else if(step == LED_STEP_3)	stepLED(rank, RESET, RESET, SET, RESET, RESET, RESET, SET);			//	C G
+		else if(step == LED_STEP_4)	stepLED(rank, RESET, RESET, SET, RESET, RESET, RESET, RESET);		//	C
+		else if(step == LED_STEP_5)	stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET);		//	none
+		else if(step == LED_STEP_6)	stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET);		//	none
+	}
+}
+/*********************************************************************/
+
+
+/**********************************************************************
+*	function name	:	letsRollFive
+*	Description		:	rolling "5" numeral
+*	Arguments		:	rank - ONE/TEN digit
+*					:	step - current step number
+*					:	show - show/hide digit
+*	Return value	:	none
+**********************************************************************/
+void letsRollFive(DISP_RANK_typedef rank, LED_STEP_typedef step, FlagStatus show)
+{
+	if(show == SET) {
+		if(step == LED_STEP_1) 		stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET);		//	none
+		else if(step == LED_STEP_2)	stepLED(rank, SET, RESET, RESET, RESET, RESET, RESET, RESET);		//	A
+		else if(step == LED_STEP_3)	stepLED(rank, SET, RESET, RESET, RESET, RESET, SET, RESET);			//	A F
+		else if(step == LED_STEP_4)	stepLED(rank, SET, RESET, RESET, RESET, RESET, SET, SET);			//	A F G
+		else if(step == LED_STEP_5)	stepLED(rank, SET, RESET, SET, RESET, RESET, SET, SET);				//	A C F G
+		else if(step == LED_STEP_6)	stepLED(rank, SET, RESET, SET, SET, RESET, SET, SET);				//	A C D F G
+	}
+	else {
+		if(step == LED_STEP_1) 		stepLED(rank, SET, RESET, SET, SET, RESET, SET, SET);				//	A C D F G
+		else if(step == LED_STEP_2)	stepLED(rank, RESET, RESET, SET, SET, RESET, SET, SET);				//	C D F G
+		else if(step == LED_STEP_3)	stepLED(rank, RESET, RESET, SET, SET, RESET, RESET, SET);			//	C D G
+		else if(step == LED_STEP_4)	stepLED(rank, RESET, RESET, SET, SET, RESET, RESET, RESET);			//	C D
+		else if(step == LED_STEP_5)	stepLED(rank, RESET, RESET, RESET, SET, RESET, RESET, RESET);		//	D
+		else if(step == LED_STEP_6)	stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET);		//	none
+	}
+}
+/*********************************************************************/
+
+
+/**********************************************************************
+*	function name	:	letsRollSix
+*	Description		:	rolling "6" numeral
+*	Arguments		:	rank - ONE/TEN digit
+*					:	step - current step number
+*					:	show - show/hide digit
+*	Return value	:	none
+**********************************************************************/
+void letsRollSix(DISP_RANK_typedef rank, LED_STEP_typedef step, FlagStatus show)
+{
+	if(show == SET) {
+		if(step == LED_STEP_1) 		stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET);		//	none
+		else if(step == LED_STEP_2)	stepLED(rank, SET, RESET, RESET, RESET, RESET, RESET, RESET);		//	A
+		else if(step == LED_STEP_3)	stepLED(rank, SET, RESET, RESET, RESET, RESET, SET, RESET);			//	A F
+		else if(step == LED_STEP_4)	stepLED(rank, SET, RESET, RESET, RESET, RESET, SET, SET);			//	A F G
+		else if(step == LED_STEP_5)	stepLED(rank, SET, RESET, SET, RESET, SET, SET, SET);				//	A C E F G
+		else if(step == LED_STEP_6)	stepLED(rank, SET, RESET, SET, SET, SET, SET, SET);					//	A C D E F G
+	}
+	else {
+		if(step == LED_STEP_1) 		stepLED(rank, SET, RESET, SET, SET, SET, SET, SET);					//	A C D E F G
+		else if(step == LED_STEP_2)	stepLED(rank, RESET, RESET, SET, SET, SET, SET, SET);				//	C D E F G
+		else if(step == LED_STEP_3)	stepLED(rank, RESET, RESET, SET, SET, SET, RESET, SET);				//	C D E G
+		else if(step == LED_STEP_4)	stepLED(rank, RESET, RESET, SET, SET, SET, RESET, RESET);			//	C D E
+		else if(step == LED_STEP_5)	stepLED(rank, RESET, RESET, RESET, SET, RESET, RESET, RESET);		//	D
+		else if(step == LED_STEP_6)	stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET);		//	none
+	}
+}
+/*********************************************************************/
+
+
+/**********************************************************************
+*	function name	:	letsRollSeven
+*	Description		:	rolling "7" numeral
+*	Arguments		:	rank - ONE/TEN digit
+*					:	step - current step number
+*					:	show - show/hide digit
+*	Return value	:	none
+**********************************************************************/
+void letsRollSeven(DISP_RANK_typedef rank, LED_STEP_typedef step, FlagStatus show)
+{
+	if(show == SET) {
+		if(step == LED_STEP_1) 		stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET);		//	none
+		else if(step == LED_STEP_2)	stepLED(rank, SET, RESET, RESET, RESET, RESET, RESET, RESET);		//	A
+		else if(step == LED_STEP_3)	stepLED(rank, SET, SET, RESET, RESET, RESET, RESET, RESET);			//	A B
+		else if(step == LED_STEP_4)	stepLED(rank, SET, SET, RESET, RESET, RESET, RESET, RESET);			//	A B
+		else if(step == LED_STEP_5)	stepLED(rank, SET, SET, SET, RESET, RESET, RESET, RESET);			//	A B C
+		else if(step == LED_STEP_6)	stepLED(rank, SET, SET, SET, RESET, RESET, RESET, RESET);			//	A B C
+	}
+	else {
+		if(step == LED_STEP_1) 		stepLED(rank, SET, SET, SET, RESET, RESET, RESET, RESET);			//	A B C
+		else if(step == LED_STEP_2)	stepLED(rank, RESET, SET, SET, RESET, RESET, RESET, RESET);			//	B C
+		else if(step == LED_STEP_3)	stepLED(rank, RESET, RESET, SET, RESET, RESET, RESET, RESET);		//	C
+		else if(step == LED_STEP_4)	stepLED(rank, RESET, RESET, SET, RESET, RESET, RESET, RESET);		//	C
+		else if(step == LED_STEP_5)	stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET);		//	none
+		else if(step == LED_STEP_6)	stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET);		//	none
+	}
+}
+/*********************************************************************/
+
+
+/**********************************************************************
+*	function name	:	letsRollEight
+*	Description		:	rolling "8" numeral
+*	Arguments		:	rank - ONE/TEN digit
+*					:	step - current step number
+*					:	show - show/hide digit
+*	Return value	:	none
+**********************************************************************/
+void letsRollEight(DISP_RANK_typedef rank, LED_STEP_typedef step, FlagStatus show)
+{
+	if(show == SET) {
+		if(step == LED_STEP_1) 		stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET);		//	none
+		else if(step == LED_STEP_2)	stepLED(rank, SET, RESET, RESET, RESET, RESET, RESET, RESET);		//	A
+		else if(step == LED_STEP_3)	stepLED(rank, SET, SET, RESET, RESET, RESET, SET, RESET);			//	A B F
+		else if(step == LED_STEP_4)	stepLED(rank, SET, SET, RESET, RESET, RESET, SET, SET);				//	A B F G
+		else if(step == LED_STEP_5)	stepLED(rank, SET, SET, SET, RESET, SET, SET, SET);					//	A B C E F G
+		else if(step == LED_STEP_6)	stepLED(rank, SET, SET, SET, SET, SET, SET, SET);					//	A B C D E F G
+	}
+	else {
+		if(step == LED_STEP_1) 		stepLED(rank, SET, SET, SET, SET, SET, SET, SET);					//	A B C D E F G
+		else if(step == LED_STEP_2)	stepLED(rank, RESET, SET, SET, SET, SET, SET, SET);					//	B C D E F G
+		else if(step == LED_STEP_3)	stepLED(rank, RESET, RESET, SET, SET, SET, RESET, SET);				//	C D E G
+		else if(step == LED_STEP_4)	stepLED(rank, RESET, RESET, SET, SET, SET, RESET,RESET);			//	C D E
+		else if(step == LED_STEP_5)	stepLED(rank, RESET, RESET, RESET, SET, RESET, RESET, RESET);		//	D
+		else if(step == LED_STEP_6)	stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET);		//	none
+	}
+}
+/*********************************************************************/
+
+
+/**********************************************************************
+*	function name	:	letsRollNine
+*	Description		:	rolling "9" numeral
+*	Arguments		:	rank - ONE/TEN digit
+*					:	step - current step number
+*					:	show - show/hide digit
+*	Return value	:	none
+**********************************************************************/
+void letsRollNine(DISP_RANK_typedef rank, LED_STEP_typedef step, FlagStatus show)
+{
+	if(show == SET) {
+		if(step == LED_STEP_1) 		stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET);		//	none
+		else if(step == LED_STEP_2)	stepLED(rank, SET, RESET, RESET, RESET, RESET, RESET, RESET);		//	A
+		else if(step == LED_STEP_3)	stepLED(rank, SET, SET, RESET, RESET, RESET, SET, RESET);			//	A B F
+		else if(step == LED_STEP_4)	stepLED(rank, SET, SET, RESET, RESET, RESET, SET, SET);				//	A B F G
+		else if(step == LED_STEP_5)	stepLED(rank, SET, SET, SET, RESET, RESET, SET, SET);				//	A B C F G
+		else if(step == LED_STEP_6)	stepLED(rank, SET, SET, SET, SET, RESET, SET, SET);					//	A B C D F G
+	}
+	else {
+		if(step == LED_STEP_1) 		stepLED(rank, SET, SET, SET, SET, RESET, SET, SET);					//	A B C D F G
+		else if(step == LED_STEP_2)	stepLED(rank, RESET, SET, SET, SET, RESET, SET, SET);				//	B C D F G
+		else if(step == LED_STEP_3)	stepLED(rank, RESET, RESET, SET, SET, RESET, RESET, SET);			//	C D G
+		else if(step == LED_STEP_4)	stepLED(rank, RESET, RESET, SET, SET, RESET, RESET, RESET);			//	C D
+		else if(step == LED_STEP_5)	stepLED(rank, RESET, RESET, RESET, SET, RESET, RESET, RESET);		//	D
+		else if(step == LED_STEP_6)	stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET);		//	none
+	}
+}
+/*********************************************************************/
+
+
+/**********************************************************************
+*	function name	:	letsRollZero
+*	Description		:	rolling "0" numeral
+*	Arguments		:	rank - ONE/TEN digit
+*					:	step - current step number
+*					:	show - show/hide digit
+*	Return value	:	none
+**********************************************************************/
+void letsRollZero(DISP_RANK_typedef rank, LED_STEP_typedef step, FlagStatus show)
+{
+	if(show == SET) {
+		if(step == LED_STEP_1) 		stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET);		//	none
+		else if(step == LED_STEP_2)	stepLED(rank, SET, RESET, RESET, RESET, RESET, RESET, RESET);		//	A
+		else if(step == LED_STEP_3)	stepLED(rank, SET, SET, RESET, RESET, RESET, SET, RESET);			//	A B F
+		else if(step == LED_STEP_4)	stepLED(rank, SET, SET, RESET, RESET, RESET, SET, RESET);			//	A B F
+		else if(step == LED_STEP_5)	stepLED(rank, SET, SET, SET, RESET, SET, SET, RESET);				//	A B C E F
+		else if(step == LED_STEP_6)	stepLED(rank, SET, SET, SET, SET, SET, SET, RESET);					//	A B C D E F
+	}
+	else {
+		if(step == LED_STEP_1) 		stepLED(rank, SET, SET, SET, SET, SET, SET, RESET);					//	A B C D E F
+		else if(step == LED_STEP_2)	stepLED(rank, RESET, SET, SET, SET, SET, SET, RESET);				//	B C D E F
+		else if(step == LED_STEP_3)	stepLED(rank, RESET, RESET, SET, SET, SET, RESET, RESET);			//	C D E
+		else if(step == LED_STEP_4)	stepLED(rank, RESET, RESET, SET, SET, SET, RESET, RESET);			//	C D E
+		else if(step == LED_STEP_5)	stepLED(rank, RESET, RESET, RESET, SET, RESET, RESET, RESET);		//	D
+		else if(step == LED_STEP_6)	stepLED(rank, RESET, RESET, RESET, RESET, RESET, RESET, RESET);		//	none
+	}
+}
+/*********************************************************************/
+
+
+/**********************************************************************
+*	function name	:	stepLED
+*	Description		:	set/reset LED sector
+*	Arguments		:	rank - ONE/TEN digit
+*					:	a - display A sector
+*					:	b - display B sector
+*					:	c - display C sector
+*					:	d - display D sector
+*					:	e - display E sector
+*					:	f - display F sector
+*					:	g - display G sector
+*					:	delay - delay
+*	Return value	:	none
+**********************************************************************/
+void stepLED(DISP_RANK_typedef rank, FlagStatus a, FlagStatus b, FlagStatus c, FlagStatus d, FlagStatus e, FlagStatus f, FlagStatus g)
+{
+	switch(rank) {
+	case DISP_RANK_ONE:
+		if(a == SET) 	SET_DIG_ONE_A;
+		else			RESET_DIG_ONE_A;
+
+		if(b == SET) 	SET_DIG_ONE_B;
+		else			RESET_DIG_ONE_B;
+
+		if(c == SET) 	SET_DIG_ONE_C;
+		else			RESET_DIG_ONE_C;
+
+		if(d == SET) 	SET_DIG_ONE_D;
+		else			RESET_DIG_ONE_D;
+
+		if(e == SET) 	SET_DIG_ONE_E;
+		else			RESET_DIG_ONE_E;
+
+		if(f == SET) 	SET_DIG_ONE_F;
+		else			RESET_DIG_ONE_F;
+
+		if(g == SET) 	SET_DIG_ONE_G;
+		else			RESET_DIG_ONE_G;
+
+		break;
+	case DISP_RANK_TEN:
+		if(a == SET) 	SET_DIG_TEN_A;
+		else			RESET_DIG_TEN_A;
+
+		if(b == SET) 	SET_DIG_TEN_B;
+		else			RESET_DIG_TEN_B;
+
+		if(c == SET) 	SET_DIG_TEN_C;
+		else			RESET_DIG_TEN_C;
+
+		if(d == SET) 	SET_DIG_TEN_D;
+		else			RESET_DIG_TEN_D;
+
+		if(e == SET) 	SET_DIG_TEN_E;
+		else			RESET_DIG_TEN_E;
+
+		if(f == SET) 	SET_DIG_TEN_F;
+		else			RESET_DIG_TEN_F;
+
+		if(g == SET) 	SET_DIG_TEN_G;
+		else			RESET_DIG_TEN_G;
+
+		break;
+	default:
+		break;
+	}
+}
+/*********************************************************************/
+
+
+/**********************************************************************
+*	function name	:	gameMode
+*	Description		:	some game function
+*	Arguments		:	none
+*	Return value	:	none
+**********************************************************************/
+void gameMode(void)
+{
+//	while(tKeyState.longTouch == RESET) {
+//
+//
+//
+//	}
+//
+//	tKeyState.longTouch = RESET;
+//
+//	if(tKeyState.shortTouch == SET) {
+//
+//		tKeyState.shortTouch = RESET;
+//	}
+//	else if(tKeyState.longTouch == SET) {
+//		mode = MODE_GAME;
+//
+//		tKeyState.longTouch = RESET;
+//	}
+
+	while(1) {
+		for(uint8_t i = 0; i < 100; i++) {
+			setDispNum1(i);
+			delayMs(200);
+		}
+	}
+}
+/*********************************************************************/
+
+
+/**********************************************************************
+*	function name	:	setDispNum
+*	Description		:	set number on LED display
+*	Arguments		:	num - number to display
+*	Return value	:	none
+**********************************************************************/
+void setDispNum1(uint8_t num)
+{
+	static FlagStatus firstStartFlag = SET;
+	static uint8_t dispData = 0;
+
+	uint8_t rankOne = 0;
+	uint8_t rankTen = 0;
+
+
+	//	only two digits can be displayed
+	if(num > 99) {
+		num %= 100;
+	}
+
+	if(num == dispData) return;
+
+	//	skip hiding digits after power up
+	if(firstStartFlag == RESET) {
+		//	hide previous digits
+		rankTen = dispData / 10;
+		rankOne = dispData % 10;
+
+		for(LED_STEP_typedef i = LED_STEP_FIRST; i <= LED_STEP_LAST; i++) {
+			pRollDigit[rankOne](DISP_RANK_ONE, i, RESET);
+			pRollDigit[rankTen](DISP_RANK_TEN, i, RESET);
+
+			delayMs(ROLL_DELAY);
+		}
+	}
+	else {
+		firstStartFlag = RESET;
+	}
+
+	//	refresh current digits
+	dispData = num;
+
+	//	set current digits
+	rankTen = dispData / 10;
+	rankOne = dispData % 10;
+
+	for(LED_STEP_typedef i = LED_STEP_FIRST; i <= LED_STEP_LAST; i++) {
+		pRollDigit[rankOne](DISP_RANK_ONE, i, SET);
+		pRollDigit[rankTen](DISP_RANK_TEN, i, SET);
+
+		delayMs(ROLL_DELAY);
 	}
 }
 /*********************************************************************/

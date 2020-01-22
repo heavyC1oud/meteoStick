@@ -47,7 +47,21 @@
 #define RESET_LED_HUM (GPIOB->BSRR = GPIO_BSRR_BR_13)		//	reset humidity LED
 #define RESET_LED_BAR (GPIOB->BSRR = GPIO_BSRR_BR_15)		//	reset pressure LED
 
+
+#define ROLL_DELAY 42
+
 /*************************	TYPEDEF	**********************************/
+typedef enum {
+	LED_STEP_FIRST,
+	LED_STEP_1 = LED_STEP_FIRST,
+	LED_STEP_2,
+	LED_STEP_3,
+	LED_STEP_4,
+	LED_STEP_5,
+	LED_STEP_6,
+	LED_STEP_LAST = LED_STEP_6,
+} LED_STEP_typedef;
+
 typedef enum {
 	LED_TEMP,
 	LED_HUM,
@@ -95,3 +109,17 @@ void setEight(DISP_RANK_typedef rank);
 void setNine(DISP_RANK_typedef rank);
 void setDispNum(uint8_t num);
 void setLedInfo(LED_INFO_typedef led, LED_ACT_typedef act);
+
+void letsRollOne(DISP_RANK_typedef rank, LED_STEP_typedef step, FlagStatus show);
+void letsRollTwo(DISP_RANK_typedef rank, LED_STEP_typedef step, FlagStatus show);
+void letsRollThree(DISP_RANK_typedef rank, LED_STEP_typedef step, FlagStatus show);
+void letsRollFour(DISP_RANK_typedef rank, LED_STEP_typedef step, FlagStatus show);
+void letsRollFive(DISP_RANK_typedef rank, LED_STEP_typedef step, FlagStatus show);
+void letsRollSix(DISP_RANK_typedef rank, LED_STEP_typedef step, FlagStatus show);
+void letsRollSeven(DISP_RANK_typedef rank, LED_STEP_typedef step, FlagStatus show);
+void letsRollEight(DISP_RANK_typedef rank, LED_STEP_typedef step, FlagStatus show);
+void letsRollNine(DISP_RANK_typedef rank, LED_STEP_typedef step, FlagStatus show);
+void letsRollZero(DISP_RANK_typedef rank, LED_STEP_typedef step, FlagStatus show);
+void stepLED(DISP_RANK_typedef rank, FlagStatus a, FlagStatus b, FlagStatus c, FlagStatus d, FlagStatus e, FlagStatus f, FlagStatus g);
+void gameMode(void);
+void setDispNum1(uint8_t num);
