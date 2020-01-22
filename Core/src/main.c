@@ -16,6 +16,7 @@
 void taskGetMeas(void *pvParameters);
 void taskTouchKeyHandler(void *pvParameters);
 void taskMain(void *pvParameters);
+void taskRefreshWDT(void *pvParameters);
 
 /*********************************************************************/
 
@@ -28,6 +29,38 @@ MODE_typedef mode = MODE_OFF;
 TimerHandle_t sleepTimer;
 
 /*************************	FUNCTION	******************************/
+
+/**********************************************************************
+*	function name	:	initWDG
+*	Description		:	watch dog timer initialization
+*	Arguments		:	none
+*	Return value	:	none
+**********************************************************************/
+void initWDG(void)
+{
+	RCC->CSR |= RCC_CSR_LSION;						//	LSI oscillator ON
+
+	while((RCC->CSR & RCC_CSR_LSIRDY) == RESET);		//	wait until LSI oscillator is stable
+
+
+	IWDG->KR = IWDG_START;							//	enable the IWDG
+
+	IWDG->KR = IWDG_WRITE_ACCESS;					//	enable register access
+
+	while(IWDG->SR);								//	wait to the registers to be updated
+
+
+	IWDG->PR = IWDG_PRESCALER_256;					//	write IWDG prescaler
+
+	IWDG->RLR = IWDG_COUNT_VALUE_4_S;				//	write reload register
+
+	while(IWDG->SR);								//	wait to the registers to be updated
+
+
+	IWDG->KR = IWDG_REFRESH;						//	refresh the counter value
+}
+/*********************************************************************/
+
 
 /**********************************************************************
 *	function name	:	timerCB
@@ -136,6 +169,7 @@ void setMode(void)
 **********************************************************************/
 int main(void)
 {
+	initWDG();
 	initLED();
 	initDelayTimer();
 	initI2C();
@@ -145,6 +179,7 @@ int main(void)
 	xTaskCreate(taskGetMeas, "GET MEAS", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
 	xTaskCreate(taskTouchKeyHandler, "TOUCH HANDLER", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
 	xTaskCreate(taskMain, "MAIN", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+	xTaskCreate(taskRefreshWDT, "REFRESH_WDT", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
 
 	sleepTimer = xTimerCreate("SLEEP TIMER", pdMS_TO_TICKS(TURN_OFF_TIMER_DELAY), pdFALSE, (void*)0, timerCB);
 
@@ -154,6 +189,14 @@ int main(void)
 
 }
 
+
+void taskRefreshWDT(void *pvParameters)
+{
+	while(1) {
+		IWDG->KR = IWDG_REFRESH;						//	refresh the counter value
+		vTaskDelay(IWDT_REFRESH_DELAY);
+	}
+}
 
 void taskGetMeas(void *pvParameters)
 {

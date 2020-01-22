@@ -35,7 +35,7 @@ void letsRollOne(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop)
 *					:	stop - stop rolling on numeral
 *	Return value	:	none
 **********************************************************************/
-void letsRollTwo(DISP_RANK_typedef rank, uint32_t delay)
+void letsRollTwo(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop)
 {
 	stepLED(rank, SET, RESET, RESET, RESET, RESET, RESET, RESET, delay);			//	A
 	stepLED(rank, SET, RESET, RESET, RESET, RESET, SET, SET, delay);				//	F G
@@ -125,7 +125,7 @@ void letsRollFive(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop)
 *					:	stop - stop rolling on numeral
 *	Return value	:	none
 **********************************************************************/
-void letsRollFive(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop)
+void letsRollSix(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop)
 {
 	stepLED(rank, SET, RESET, RESET, RESET, RESET, RESET, RESET, delay);			//	A
 	stepLED(rank, SET, SET, RESET, RESET, RESET, SET, SET, delay);					//	A B F G
@@ -298,7 +298,7 @@ void stepLED(DISP_RANK_typedef rank, FlagStatus a, FlagStatus b, FlagStatus c, F
 		break;
 	}
 
-	delayMS(delay);
+	delayMs(delay);
 }
 /*********************************************************************/
 
@@ -311,22 +311,22 @@ void stepLED(DISP_RANK_typedef rank, FlagStatus a, FlagStatus b, FlagStatus c, F
 **********************************************************************/
 void gameMode(void)
 {
-	while(tKeyState.longTouch == RESET) {
-
-
-
-	}
-
-	tKeyState.longTouch = RESET;
-
-	if(tKeyState.shortTouch == SET) {
-
-		tKeyState.shortTouch = RESET;
-	}
-	else if(tKeyState.longTouch == SET) {
-		mode = MODE_GAME;
-
-		tKeyState.longTouch = RESET;
-	}
+//	while(tKeyState.longTouch == RESET) {
+//
+//
+//
+//	}
+//
+//	tKeyState.longTouch = RESET;
+//
+//	if(tKeyState.shortTouch == SET) {
+//
+//		tKeyState.shortTouch = RESET;
+//	}
+//	else if(tKeyState.longTouch == SET) {
+//		mode = MODE_GAME;
+//
+//		tKeyState.longTouch = RESET;
+//	}
 }
 /*********************************************************************/

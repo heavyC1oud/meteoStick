@@ -3,8 +3,6 @@
 #include "led.h"
 
 /*************************	FUNCTIONS PROTOTYPE	******************************/
-static void resetDispOne(void);
-static void resetDispTen(void);
 
 /*************************	FUNCTION	******************************/
 
