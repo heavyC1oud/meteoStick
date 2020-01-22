@@ -4,6 +4,9 @@
 #include "led.h"
 
 
+#define ROLL_DELAY 50
+
+
 /*************************	FUNCTIONS PROTOTYPE	******************************/
 void letsRollOne(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop);
 void letsRollTwo(DISP_RANK_typedef rank, uint32_t delay, FlagStatus stop);

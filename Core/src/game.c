@@ -328,5 +328,27 @@ void gameMode(void)
 //
 //		tKeyState.longTouch = RESET;
 //	}
+
+	while(1) {
+		letsRollOne(DISP_RANK_ONE, ROLL_DELAY, RESET);
+		letsRollTwo(DISP_RANK_ONE, ROLL_DELAY, RESET);
+		letsRollThree(DISP_RANK_ONE, ROLL_DELAY, RESET);
+		letsRollFour(DISP_RANK_ONE, ROLL_DELAY, RESET);
+		letsRollFive(DISP_RANK_ONE, ROLL_DELAY, RESET);
+		letsRollSix(DISP_RANK_ONE, ROLL_DELAY, RESET);
+		letsRollSeven(DISP_RANK_ONE, ROLL_DELAY, RESET);
+		letsRollEight(DISP_RANK_ONE, ROLL_DELAY, RESET);
+		letsRollNine(DISP_RANK_ONE, ROLL_DELAY, SET);
+
+		letsRollOne(DISP_RANK_TEN, ROLL_DELAY, RESET);
+		letsRollTwo(DISP_RANK_TEN, ROLL_DELAY, RESET);
+		letsRollThree(DISP_RANK_TEN, ROLL_DELAY, RESET);
+		letsRollFour(DISP_RANK_TEN, ROLL_DELAY, RESET);
+		letsRollFive(DISP_RANK_TEN, ROLL_DELAY, RESET);
+		letsRollSix(DISP_RANK_TEN, ROLL_DELAY, RESET);
+		letsRollSeven(DISP_RANK_TEN, ROLL_DELAY, RESET);
+		letsRollEight(DISP_RANK_TEN, ROLL_DELAY, RESET);
+		letsRollNine(DISP_RANK_TEN, ROLL_DELAY, SET);
+	}
 }
 /*********************************************************************/
