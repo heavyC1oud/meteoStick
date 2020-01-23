@@ -9,8 +9,6 @@
 #define DELAY_TIMER_PRESC 1000
 #define DELAY_TIMER_PRELOAD_VALUE 1000
 
-/*************************	VARIABLE	******************************/
-
-/*************************	FUNCTIONS PROTOTYPE	******************************/
+/*************************	FUNCTION PROTOTYPE	******************************/
 void initDelayTimer();
 void delayMs(uint32_t delay);

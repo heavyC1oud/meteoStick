@@ -3,6 +3,7 @@
 /*********************************************************************/
 
 /*************************	DEFINE	******************************/
+//	Independent watch dog timer
 #define IWDG_START 0xCCCC
 #define IWDG_WRITE_ACCESS 0x5555
 #define IWDG_REFRESH 0xAAAA
@@ -13,14 +14,15 @@
 #define SENSOR_POLL_FR 125
 #define TOUCH_POLL_FR 10
 #define LONG_TOUCH_MAX_TIMER (2000 / TOUCH_POLL_FR)
-#define TURN_OFF_TIMER_DELAY 26000
+#define TURN_OFF_TIMER_DELAY 6000
+#define DISPLAY_DATA_DELAY 10
 
+/*************************	TYPEDEF	**********************************/
 typedef enum {
 	MODE_OFF = 0,
 	MODE_TEMP,
 	MODE_HUM,
 	MODE_BAR,
-	MODE_GAME,
 } MODE_typedef;
 
 typedef struct {
@@ -32,9 +34,7 @@ typedef struct {
 	uint32_t longTouchTimer;
 } TOUCH_STATE_typedef;
 
-
-
-/*************************	FUNCTIONS PROTOTYPE	******************************/
+/*************************	FUNCTION PROTOTYPE	******************************/
 void initWDG(void);
 void timerCB(TimerHandle_t xTimer);
 int initBME280(void);

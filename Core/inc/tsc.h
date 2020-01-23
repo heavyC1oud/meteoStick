@@ -14,5 +14,5 @@ typedef enum {
 /*************************	VARIABLE	******************************/
 extern volatile TSC_CHANNEL_Typedef touchKey;
 
-/*************************	FUNCTIONS PROTOTYPE	******************************/
+/*************************	FUNCTION PROTOTYPE	******************************/
 void initTSC(void);

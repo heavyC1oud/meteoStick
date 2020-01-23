@@ -5,7 +5,7 @@
 /*********************************************************************/
 
 /*************************	VARIABLE	******************************/
-volatile uint32_t delayTimerValue = 0;
+static volatile uint32_t delayTimerValue = 0;
 
 /*************************	FUNCTION PROTOTYPE	******************************/
 static void startDelayTimer(void);

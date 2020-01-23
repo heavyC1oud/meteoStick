@@ -11,10 +11,10 @@
 #include "timers.h"
 #include "main.h"
 
-void taskShowDisplay(void *pvParameters);
+//	FreeRTOS tasks
 void taskGetMeas(void *pvParameters);
 void taskTouchKeyHandler(void *pvParameters);
-void taskMain(void *pvParameters);
+void taskDisplayData(void *pvParameters);
 void taskRefreshWDT(void *pvParameters);
 
 /*********************************************************************/
@@ -24,10 +24,8 @@ struct bme280_dev sensor = {0};
 struct bme280_data sensorData = {0};
 TOUCH_STATE_typedef tKeyState = {0};
 MODE_typedef mode = MODE_OFF;
-
 TimerHandle_t sleepTimer;
 
-uint32_t dispData = 0;
 /*************************	FUNCTION	******************************/
 
 /**********************************************************************
@@ -39,23 +37,17 @@ uint32_t dispData = 0;
 void initWDG(void)
 {
 	RCC->CSR |= RCC_CSR_LSION;						//	LSI oscillator ON
-
-	while((RCC->CSR & RCC_CSR_LSIRDY) == RESET);		//	wait until LSI oscillator is stable
+	while((RCC->CSR & RCC_CSR_LSIRDY) == RESET);	//	wait until LSI oscillator is stable
 
 
 	IWDG->KR = IWDG_START;							//	enable the IWDG
-
 	IWDG->KR = IWDG_WRITE_ACCESS;					//	enable register access
-
 	while(IWDG->SR);								//	wait to the registers to be updated
 
 
 	IWDG->PR = IWDG_PRESCALER_256;					//	write IWDG prescaler
-
 	IWDG->RLR = IWDG_COUNT_VALUE_4_S;				//	write reload register
-
 	while(IWDG->SR);								//	wait to the registers to be updated
-
 
 	IWDG->KR = IWDG_REFRESH;						//	refresh the counter value
 }
@@ -123,6 +115,7 @@ int initBME280(void)
 **********************************************************************/
 void setMode(void)
 {
+	//	short touch handler
 	if(tKeyState.shortTouch == SET) {
 		switch(mode) {
 		case MODE_OFF:
@@ -147,18 +140,17 @@ void setMode(void)
 
 		tKeyState.shortTouch = RESET;
 
+		//	reset sleep timer
 		xTimerStart(sleepTimer, portMAX_DELAY);
 	}
+	//	long touch handler
 	else if(tKeyState.longTouch == SET) {
-		mode = MODE_GAME;
+		mode = MODE_OFF;
 
 		tKeyState.longTouch = RESET;
 	}
 }
 /*********************************************************************/
-
-
-
 
 
 /**********************************************************************
@@ -169,37 +161,38 @@ void setMode(void)
 **********************************************************************/
 int main(void)
 {
+	//	peripheral initialization
 	initWDG();
-	initLED();
+	initLed();
 	initDelayTimer();
 	initI2C();
 	initBME280();
 	initTSC();
 
+	//	create FreeRTOS task
 	xTaskCreate(taskGetMeas, "GET MEAS", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
 	xTaskCreate(taskTouchKeyHandler, "TOUCH HANDLER", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
-	xTaskCreate(taskMain, "MAIN", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+	xTaskCreate(taskDisplayData, "MAIN", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
 	xTaskCreate(taskRefreshWDT, "REFRESH_WDT", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
 
-	xTaskCreate(taskShowDisplay, "REFRESH_WDT", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
-
+	//	create FreeRTOS timer
 	sleepTimer = xTimerCreate("SLEEP TIMER", pdMS_TO_TICKS(TURN_OFF_TIMER_DELAY), pdFALSE, (void*)0, timerCB);
 
+	//	start FreeRTOS scheduler
 	vTaskStartScheduler();
 
+	//	program never run here
 	while(1);
-
 }
+/*********************************************************************/
 
 
-void taskShowDisplay(void *pvParameters)
-{
-	while(1) {
-		setDispNum(dispData);
-	}
-}
-
-
+/**********************************************************************
+*	function name	:	taskRefreshWDT
+*	Description		:	FreeRTOS task, clear IWDT
+*	Arguments		:	*pvParameters - unused
+*	Return value	:	none
+**********************************************************************/
 void taskRefreshWDT(void *pvParameters)
 {
 	while(1) {
@@ -207,7 +200,15 @@ void taskRefreshWDT(void *pvParameters)
 		vTaskDelay(IWDT_REFRESH_DELAY);
 	}
 }
+/*********************************************************************/
 
+
+/**********************************************************************
+*	function name	:	taskGetMeas
+*	Description		:	FreeRTOS task, refresh sensor data
+*	Arguments		:	*pvParameters - unused
+*	Return value	:	none
+**********************************************************************/
 void taskGetMeas(void *pvParameters)
 {
 	while(1) {
@@ -215,7 +216,15 @@ void taskGetMeas(void *pvParameters)
 		vTaskDelay(SENSOR_POLL_FR);
 	}
 }
+/*********************************************************************/
 
+
+/**********************************************************************
+*	function name	:	taskTouchKeyHandler
+*	Description		:	FreeRTOS task, touch button processing
+*	Arguments		:	*pvParameters - unused
+*	Return value	:	none
+**********************************************************************/
 void taskTouchKeyHandler(void *pvParameters)
 {
 	//	reset structure
@@ -262,13 +271,22 @@ void taskTouchKeyHandler(void *pvParameters)
 		vTaskDelay(TOUCH_POLL_FR);
 	}
 }
+/*********************************************************************/
 
-void taskMain(void *pvParameters)
+
+/**********************************************************************
+*	function name	:	taskDisplayData
+*	Description		:	FreeRTOS task, show sensor data on display and info LED processing
+*	Arguments		:	*pvParameters - unused
+*	Return value	:	none
+**********************************************************************/
+void taskDisplayData(void *pvParameters)
 {
 	while(1) {
 		setMode();
 
 		switch(mode) {
+		//	turn off display and info LEDs
 		case MODE_OFF:
 			setLedInfo(LED_TEMP, LED_OFF);
 			setLedInfo(LED_HUM, LED_OFF);
@@ -277,48 +295,39 @@ void taskMain(void *pvParameters)
 			resetDisp();
 
 			break;
+		//	show temperature data in Celsius on display and appropriate info LED
 		case MODE_TEMP:
 			setLedInfo(LED_TEMP, LED_ON);
 			setLedInfo(LED_HUM, LED_OFF);
 			setLedInfo(LED_BAR, LED_OFF);
 
-//			setDispNum1((uint32_t)sensorData.temperature);
-			dispData = sensorData.temperature;
+			setLedNum((uint32_t)sensorData.temperature);
 
 			break;
+		//	show humidity data in percent on display and appropriate info LED
 		case MODE_HUM:
 			setLedInfo(LED_TEMP, LED_OFF);
 			setLedInfo(LED_HUM, LED_ON);
 			setLedInfo(LED_BAR, LED_OFF);
 
-//			setDispNum1((uint32_t)sensorData.humidity);
-			dispData = sensorData.humidity;
+			setLedNum((uint32_t)sensorData.humidity);
 
 			break;
+		//	show pressure data in mm Hg on display and appropriate info LED
+		//	7 digit is not displayed but implied
 		case MODE_BAR:
 			setLedInfo(LED_TEMP, LED_OFF);
 			setLedInfo(LED_HUM, LED_OFF);
 			setLedInfo(LED_BAR, LED_ON);
 
-//			setDispNum1(((uint32_t)(sensorData.pressure / 133.322) % 700) + 1);
-			dispData = (((uint32_t)(sensorData.pressure / 133.322) % 700) + 1);
-
-			break;
-		case MODE_GAME:
-			setLedInfo(LED_TEMP, LED_OFF);
-			setLedInfo(LED_HUM, LED_OFF);
-			setLedInfo(LED_BAR, LED_OFF);
-
-			resetDisp();
-
-			gameMode();
+			setLedNum(((uint32_t)(sensorData.pressure / 133.322) % 700) + 1);
 
 			break;
 		default:
 			break;
 		}
 
-		vTaskDelay(10);
+		vTaskDelay(DISPLAY_DATA_DELAY);
 	}
 }
-
+/*********************************************************************/

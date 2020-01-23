@@ -7,7 +7,7 @@ volatile TSC_CHANNEL_Typedef touchKey = TSC_CHANNEL_EMPTY;
 
 static uint32_t channelBase = 0;
 
-/*************************	FUNCTIONS PROTOTYPE	******************************/
+/*************************	FUNCTION PROTOTYPE	******************************/
 static void calibratingTSC(void);
 
 /*************************	FUNCTION	******************************/
@@ -182,10 +182,3 @@ void TSC_IRQHandler(void)
 	TSC->CR |= TSC_CR_START;
 }
 /*********************************************************************/
-
-
-
-
-
-
-
