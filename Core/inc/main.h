@@ -35,6 +35,7 @@ typedef struct {
 } TOUCH_STATE_typedef;
 
 /*************************	FUNCTION PROTOTYPE	******************************/
+void initUnusedPins(void);
 void initWDG(void);
 void timerCB(TimerHandle_t xTimer);
 int initBME280(void);

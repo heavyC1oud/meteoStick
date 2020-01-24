@@ -29,6 +29,43 @@ TimerHandle_t sleepTimer;
 /*************************	FUNCTION	******************************/
 
 /**********************************************************************
+*	function name	:	initUnusedPins
+*	Description		:	set unused pins to input with pull-down
+*	Arguments		:	none
+*	Return value	:	none
+**********************************************************************/
+void initUnusedPins(void)
+{
+	//	unused GPIO set as general purpose input with pull-down
+
+	//	PORTA[8, 9, 10, 15]
+	GPIOA->MODER &= ~(GPIO_MODER_MODER8 | GPIO_MODER_MODER9 | GPIO_MODER_MODER10 | GPIO_MODER_MODER15);
+
+	GPIOA->PUPDR &= ~(GPIO_PUPDR_PUPDR8 | GPIO_PUPDR_PUPDR9 | GPIO_PUPDR_PUPDR10 | GPIO_PUPDR_PUPDR15);
+	GPIOA->PUPDR |= GPIO_PUPDR_PUPDR8_1 | GPIO_PUPDR_PUPDR9_1 | GPIO_PUPDR_PUPDR10_1 | GPIO_PUPDR_PUPDR15_1;
+
+	//	PORTB[5, 8, 9]
+	GPIOB->MODER &= ~(GPIO_MODER_MODER5 | GPIO_MODER_MODER8 | GPIO_MODER_MODER9);
+
+	GPIOB->PUPDR &= ~(GPIO_PUPDR_PUPDR5 | GPIO_PUPDR_PUPDR8 | GPIO_PUPDR_PUPDR9);
+	GPIOB->PUPDR |= GPIO_PUPDR_PUPDR5_1 | GPIO_PUPDR_PUPDR8_1 | GPIO_PUPDR_PUPDR9_1;
+
+	//	PORTC[13, 14, 15]
+	GPIOC->MODER &= ~(GPIO_MODER_MODER13 | GPIO_MODER_MODER14 | GPIO_MODER_MODER15);
+
+	GPIOC->PUPDR &= ~(GPIO_PUPDR_PUPDR13 | GPIO_PUPDR_PUPDR14 | GPIO_PUPDR_PUPDR15);
+	GPIOC->PUPDR |= GPIO_PUPDR_PUPDR13_1 | GPIO_PUPDR_PUPDR14_1 | GPIO_PUPDR_PUPDR15_1;
+
+	//	PORTF[0, 1]
+	GPIOF->MODER &= ~(GPIO_MODER_MODER0 | GPIO_MODER_MODER1);
+
+	GPIOF->PUPDR &= ~(GPIO_PUPDR_PUPDR0 | GPIO_PUPDR_PUPDR1);
+	GPIOF->PUPDR |= GPIO_PUPDR_PUPDR0_1 | GPIO_PUPDR_PUPDR1_1;
+}
+/*********************************************************************/
+
+
+/**********************************************************************
 *	function name	:	initWDG
 *	Description		:	watch dog timer initialization
 *	Arguments		:	none
@@ -162,6 +199,7 @@ void setMode(void)
 int main(void)
 {
 	//	peripheral initialization
+	initUnusedPins();
 	initWDG();
 	initLed();
 	initDelayTimer();
